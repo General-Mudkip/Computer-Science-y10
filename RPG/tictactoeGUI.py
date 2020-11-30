@@ -4,9 +4,9 @@ from tkinter import font as tkFont
 # Function containing all of the tic tac toe code
 def ticTacToe():
     # Initializes main window
-    root = tk.Tk()
-    root.title("Tic Tac Toe")
-    root.geometry("425x650")
+    tttWindow = tk.Tk()
+    tttWindow.title("Tic Tac Toe")
+    tttWindow.geometry("425x650")
 
     global playerSymbol
     playerSymbol = "x"
@@ -32,22 +32,22 @@ def ticTacToe():
     helv50 = tkFont.Font(family = "Helvetica", size = 50)
 
     # Initalizes boxes
-    b1 = tk.Button(root, text = board[1][1], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b1,1,1,playerSymbol))
-    b2 = tk.Button(root, text = board[1][2], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b2,1,2,playerSymbol))
-    b3 = tk.Button(root, text = board[1][3], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b3,1,3,playerSymbol))
-    b4 = tk.Button(root, text = board[2][1], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b4,2,1,playerSymbol))
-    b5 = tk.Button(root, text = board[2][2], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b5,2,2,playerSymbol))
-    b6 = tk.Button(root, text = board[2][3], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b6,2,3,playerSymbol))
-    b7 = tk.Button(root, text = board[3][1], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b7,3,1,playerSymbol))
-    b8 = tk.Button(root, text = board[3][2], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b8,3,2,playerSymbol))
-    b9 = tk.Button(root, text = board[3][3], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b9,3,3,playerSymbol))
+    b1 = tk.Button(tttWindow, text = board[1][1], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b1,1,1,playerSymbol))
+    b2 = tk.Button(tttWindow, text = board[1][2], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b2,1,2,playerSymbol))
+    b3 = tk.Button(tttWindow, text = board[1][3], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b3,1,3,playerSymbol))
+    b4 = tk.Button(tttWindow, text = board[2][1], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b4,2,1,playerSymbol))
+    b5 = tk.Button(tttWindow, text = board[2][2], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b5,2,2,playerSymbol))
+    b6 = tk.Button(tttWindow, text = board[2][3], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b6,2,3,playerSymbol))
+    b7 = tk.Button(tttWindow, text = board[3][1], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b7,3,1,playerSymbol))
+    b8 = tk.Button(tttWindow, text = board[3][2], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b8,3,2,playerSymbol))
+    b9 = tk.Button(tttWindow, text = board[3][3], font = helv50, padx = 25, pady = 25, command = lambda: changeSymbol(b9,3,3,playerSymbol))
     # Creates list of the button objects that can be iterated through later
     buttonList = [b1, b2, b3, b4, b5, b6, b7, b8, b9]
 
 
     # Creates labels
-    turnLabel = tk.Label(root, text = f"It is {playerSymbol}'s turn.", font = helv25)
-    label2 = tk.Label(root, text = "Pick a slot!")
+    turnLabel = tk.Label(tttWindow, text = f"It is {playerSymbol}'s turn.", font = helv25)
+    label2 = tk.Label(tttWindow, text = "Pick a slot!")
 
     # Displays buttons in the 3x3 grid pattern
     b1.grid(row = 0, column = 0)
@@ -123,7 +123,7 @@ def ticTacToe():
                 return 0
 
 
-    root.mainloop()
+    tttWindow.mainloop()
 
 if __name__ == "__main__":
     ticTacToe()
