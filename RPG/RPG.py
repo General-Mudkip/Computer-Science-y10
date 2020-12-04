@@ -17,11 +17,13 @@ helv35 = tkFont.Font(family  = "Helvetica", size = 35)
 
 class playerState():
 
-
     def __init__(self, room, lives):
         self.room = room
         self.lives = lives
-        self.endDict = {1:{"name":"Awkward...","unlocked":False, "text":"Well, you weren't supposed to do that."}}
+        self.unlockedEndings = 0
+        self.endDict = {1:{"name":"Awkward...","unlocked":False, "text":"Well, you weren't supposed to do that."},
+                        2:{"name":"Finality","unlocked":False, "text":"You've beaten the game through the main route!"}
+        }
 
     def unlockEnding(self, ending):
         self.endDict.update({ending:{"unlocked":True}})
@@ -57,10 +59,17 @@ def endingsScreen(endings):
     endingsWin.title("Your Unlocked Endings")
     endingsWin.geometry("600x300")
 
-    awkwardTitle = tk.Label(endingsWin, text = endings[1]["name"], font = helv25, anchor = "w")
-    awkwardLabel = tk.Label(endingsWin, text = f"Unlocked: {endings[1]['unlocked']} || {endings[1]['text']}")
-    awkwardLabel.grid(row = 1, column = 0)
-    awkwardTitle.grid(row = 0, column = 0)
+    endingsTitle = tk.Label(endingsWin, font = helv35, text = f"All Endings || {player.unlockedEndings}/{len(endings)} Unlocked\n---------------------------------------")
+
+    row = 1
+    for i in range(1,len(endings)+1):
+        tempTitle = tk.Label(endingsWin, text = endings[i]["name"], font  = helv25, anchor = "w")
+        tempLabel = tk.Label(endingsWin, text = f"Unlocked: {endings[i]['unlocked']} || {endings[i]['text']}")
+        tempTitle.grid(row = row, column = 0)
+        tempLabel.grid(row = row + 1, column = 0)
+        row += 2
+        
+    endingsTitle.grid(row = 0, column = 0, columnspan = 2)
 
     endingsWin.mainloop()
 
