@@ -3,6 +3,7 @@ from PIL import Image, ImageTk
 from tkinter import font as tkFont
 from tictactoeGUI import ticTacToe as tttGame
 from numberGuesser import guessingGame as gGame
+import config
 
 # Initializes main window
 root = tk.Tk()
@@ -10,10 +11,11 @@ root.geometry("800x600")
 root.title("RPG - Bence Redmond")
 
 # Creates fonts
-helv10 = tkFont.Font(family  = "Helvetica", size = 10)
-helv15 = tkFont.Font(family  = "Helvetica", size = 15)
-helv25 = tkFont.Font(family  = "Helvetica", size = 25)
-helv35 = tkFont.Font(family  = "Helvetica", size = 35)
+helv10 = tkFont.Font(family = "Helvetica", size = 10)
+helv15 = tkFont.Font(family = "Helvetica", size = 15)
+helv20 = tkFont.Font(family = "Helvetica", size = 17)
+helv25 = tkFont.Font(family = "Helvetica", size = 25)
+helv35 = tkFont.Font(family = "Helvetica", size = 35)
 
 
 # Class to store player information
@@ -28,6 +30,13 @@ class playerState():
                         2:{"name":"Finality","unlocked":False, "text":"You've beaten the game through the main route!"}
         }
 
+    def loseLife(self, lost):
+        self.lives -= lost
+        # Code to manage hearts
+
+    def startGame(self):
+        pass
+
     def unlockEnding(self, ending):
         self.endDict.update({ending:{"unlocked":True}})
 
@@ -38,6 +47,7 @@ class room():
         self.text = text
 
     def assignNeighbours(self, left, right, up, down):
+        # Stores the information about the room's neighbours, and the button object that leads to that room
         self.neighbours = {"left":{"button":leftArrow, "room":left}, 
                             "right":{"button":rightArrow, "room":right}, 
                             "up":{"button":upArrow, "room":up}, 
@@ -46,12 +56,16 @@ class room():
 
     def initState(self):
         global secondLabel
+        global interactButton
         dictList = ["left","right","up","down"]
         for i in dictList:
             if self.neighbours[i]["room"] == False:
                 self.neighbours[i]["button"].config(state = "disabled", bg = "#ff8080")
             else:
                 self.neighbours[i]["button"].config(state = "active", bg = "white")
+                if self.neighbours[i]["room"].puzzle != "fin":
+                    interactButton.config(state = "active", bg = "white")
+
 
     def moveRoom(self, direction):
         global roomLabel
@@ -61,10 +75,21 @@ class room():
         roomText.config(text = player.room.text)
         player.room.initState()
 
+    def interact(self):
+        global interactButton
+        if player.room.puzzle == "gGame":
+            gGame()
+            if returnVal == 0:
+                player.loseLife
+            player.room.puzzle = "end"
+            interactButton.config(state = "disabled", bg = "ff8080")
+        elif player.room.puzzle == "end":
+            pass
+            
 
-startingRoom = room(gGame, "Entrance", "Ho ho ho... welcome to my house of Death!")
-hallway1 = room(gGame, "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!")
-doorway = room("End", "Doorway", "Well, I guess you win?")
+startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!")
+hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!")
+doorway = room("end", "Doorway", "Well, I guess you win?")
 
 
 player = playerState(startingRoom, 3)
@@ -100,7 +125,7 @@ heart3 = tk.Label(root, image = heart_img, anchor = "w")
 
 # Creates main text
 roomLabel = tk.Label(root, text = player.room.name, font = helv35)
-roomText = tk.Label(root, text = player.room.text, font = helv15)
+roomText = tk.Label(root, text = player.room.text, font = helv20)
 secondLabel = tk.Label(root, text = "Choose a direction to go:", font = helv15)
 
 # Creates buttons
@@ -111,6 +136,7 @@ upArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabl
 leftArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "<", font = helv15, command = lambda: player.room.moveRoom("left"))
 downArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "v", font = helv15, command = lambda: player.room.moveRoom("down"))
 rightArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = ">", font = helv15, command = lambda: player.room.moveRoom("right")) 
+interactButton = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "x", font = helv15, command = player.room.interact)
 
 # Creates empty canvas spaces
 topCanvas = tk.Canvas(root, width = 160, height = 10)
@@ -123,12 +149,13 @@ roomLabel.grid(row = 0, column = 3, padx = 20)
 secondLabel.grid(row = 2, column = 0, columnspan = 3)
 topCanvas.grid(row = 0, column = 4, columnspan = 1)
 endingsButton.grid(row = 0, column = 5)
-roomText.grid(row = 1, column = 0, columnspan = 4, sticky = "w")
+roomText.grid(row = 1, column = 0, columnspan = 8, sticky = "w")
 
 upArrow.grid(row = 3, column = 1)
 leftArrow.grid(row = 4, column = 0)
 downArrow.grid(row = 5, column = 1)
 rightArrow.grid(row = 4, column = 2)
+interactButton.grid(row = 4, column = 1)
 
 #tttButton.grid(row = 1, column = 0, columnspan = 3)
 #ggButton.grid(row=2, column = 0, columnspan = 3)

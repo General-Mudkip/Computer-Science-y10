@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import font as tkFont
 import random
+import config
 
 def guessingGame():
 
@@ -9,6 +10,7 @@ def guessingGame():
     playerAttempts = 0
 
     def submit():
+        global returnVal
         try:
             pAnswer = inputBox.get()
             pAnswer = int(pAnswer)
@@ -20,6 +22,10 @@ def guessingGame():
                 answerLabel.config(text = "Too high!")
             else:
                 answerLabel.config(text = f"Correct! {playerAttempts} guesses.")
+                if playerAttempts < 10:
+                    returnVal = 1
+                else:
+                    returnVal = 0
         except:
             answerLabel.config(text = "Error Encountered! Guess again.")
 
