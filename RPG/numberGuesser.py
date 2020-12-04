@@ -2,8 +2,6 @@ import tkinter as tk
 from tkinter import font as tkFont
 import random
 
-print(f"Your answer was {1==0}")
-
 def guessingGame():
 
     answerNum = random.randint(1,100)
