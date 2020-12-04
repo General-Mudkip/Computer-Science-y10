@@ -3,7 +3,7 @@ from PIL import Image, ImageTk
 from tkinter import font as tkFont
 from tictactoeGUI import ticTacToe as tttGame
 from numberGuesser import guessingGame as gGame
-import config
+import configFile
 
 # Initializes main window
 root = tk.Tk()

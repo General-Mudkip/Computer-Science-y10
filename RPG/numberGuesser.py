@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import font as tkFont
 import random
-import config
+import configFile
 
 def guessingGame():
 

@@ -1,6 +1,6 @@
 import tkinter as tk # Module used to create GUIs
 from tkinter import font as tkFont 
-import config
+import configFile
 
 # Function containing all of the tic tac toe code
 def ticTacToe():
