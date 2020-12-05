@@ -2,8 +2,9 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import font as tkFont
 from tictactoeGUI import ticTacToe as tttGame
-from numberGuesser import guessingGame as gGame
-import configFile
+import configFile as cf
+import random
+import time
 
 # Initializes main window
 root = tk.Tk()
@@ -17,6 +18,55 @@ helv20 = tkFont.Font(family = "Helvetica", size = 17)
 helv25 = tkFont.Font(family = "Helvetica", size = 25)
 helv35 = tkFont.Font(family = "Helvetica", size = 35)
 
+def guessingGame():
+
+    answerNum = random.randint(1,100)
+    print(answerNum)
+    global playerAttempts
+    playerAttempts = 0
+
+    global gGame 
+    gGame = True
+
+    def submit():
+        try:
+            pAnswer = inputBox.get()
+            pAnswer = int(pAnswer)
+            global playerAttempts
+            playerAttempts += 1
+            if pAnswer < answerNum:
+                answerLabel.config(text = "Too low!")
+            elif pAnswer > answerNum:
+                answerLabel.config(text = "Too high!")
+            else:
+                answerLabel.config(text = f"Correct! {playerAttempts} guesses.")
+                if playerAttempts < 10:
+                    cf.gGame_returnVal = 1
+                else:
+                    cf.gGame_returnVal = 0
+                global gGame
+                gGame = False
+                ngWindow.destroy()
+        except:
+            answerLabel.config(text = "Error Encountered! Guess again.")
+
+    # Initializes main window
+    global ngWindow
+    ngWindow = tk.Toplevel(root)
+    ngWindow.title("Number Guessing Game")
+    ngWindow.geometry("170x130")
+
+    # Initializes widgets
+    guessingTitle = tk.Label(ngWindow, text = "Guess a Number!", font= helv15)
+    answerLabel = tk.Label(ngWindow, text = "Guess...")
+    inputBox = tk.Entry(ngWindow, width = 20, borderwidth = 4)
+    submitButton = tk.Button(ngWindow, text = "Submit Number", command = submit)
+
+    # Displays widgets
+    inputBox.grid(row = 2, column = 0)
+    guessingTitle.grid(row = 0, column = 0)
+    answerLabel.grid(row = 1, column = 0)
+    submitButton.grid(row = 3, column = 0)
 
 # Class to store player information
 class playerState():
@@ -41,10 +91,12 @@ class playerState():
         self.endDict.update({ending:{"unlocked":True}})
 
 class room():
-    def __init__(self, puzzle, name, text):
+    def __init__(self, puzzle, name, text, loseText, winText):
         self.name = name
         self.puzzle = puzzle
         self.text = text
+        self.loseText = loseText
+        self.winText = winText
 
     def assignNeighbours(self, left, right, up, down):
         # Stores the information about the room's neighbours, and the button object that leads to that room
@@ -58,13 +110,20 @@ class room():
         global secondLabel
         global interactButton
         dictList = ["left","right","up","down"]
+        print("Initialized")
         for i in dictList:
-            if self.neighbours[i]["room"] == False:
-                self.neighbours[i]["button"].config(state = "disabled", bg = "#ff8080")
+            neighbour = self.neighbours[i]
+            if neighbour["room"] == False:
+                neighbour["button"].config(state = "disabled", bg = "#ff8080")
             else:
-                self.neighbours[i]["button"].config(state = "active", bg = "white")
-                if self.neighbours[i]["room"].puzzle != "fin":
-                    interactButton.config(state = "active", bg = "white")
+                if self.puzzle == "fin":
+                    neighbour["button"].config(state = "active", bg = "white")
+                else:
+                    neighbour["button"].config(state = "disabled", bg = "#ff8080")
+            if self.puzzle != "fin":    
+                interactButton.config(state = "active", bg = "white")
+            else:
+                interactButton.config(state = "disabled", bg = "#ff8080")
 
 
     def moveRoom(self, direction):
@@ -76,20 +135,25 @@ class room():
         player.room.initState()
 
     def interact(self):
-        global interactButton
+        global roomText
         if player.room.puzzle == "gGame":
-            gGame()
-            if returnVal == 0:
-                player.loseLife
-            player.room.puzzle = "end"
-            interactButton.config(state = "disabled", bg = "ff8080")
-        elif player.room.puzzle == "end":
-            pass
-            
+            guessingGame()
+            root.wait_window(ngWindow)
+            returnVal = cf.gGame_returnVal
+            if returnVal == 1:
+                roomText.config(text = player.room.winText)
+            elif returnVal == 0:
+                roomText.config(text = player.room.loseText)
+                player.loseLife(1)
+            else:
+                return
+            player.room.puzzle = "fin"
+            player.room.initState()
+                
 
-startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!")
-hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!")
-doorway = room("end", "Doorway", "Well, I guess you win?")
+startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Well that was a good effort... down one life!", "Hmm, maybe that was a bit too easy.")
+hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "How did you... lose against yourself?", "I would have been worried if you hadn't won that.")
+doorway = room("end", "Doorway", "Well, I guess you win?", "N/A", "N/A")
 
 
 player = playerState(startingRoom, 3)
@@ -131,7 +195,7 @@ secondLabel = tk.Label(root, text = "Choose a direction to go:", font = helv15)
 # Creates buttons
 endingsButton = tk.Button(root, text = "Unlocked Endings", font = helv15, command = lambda: endingsScreen(player.endDict))
 tttButton = tk.Button(root, text = "Play Tic Tac Toe", command = tttGame) # Button to start Tic Tac Toe
-ggButton = tk.Button(root, text = "Play Number Guesser", command = gGame) # Button to start Guessing Game
+ggButton = tk.Button(root, text = "Play Number Guesser", command = guessingGame) # Button to start Guessing Game
 upArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "^", font = helv15, command = lambda: player.room.moveRoom("up"))
 leftArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "<", font = helv15, command = lambda: player.room.moveRoom("left"))
 downArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "v", font = helv15, command = lambda: player.room.moveRoom("down"))

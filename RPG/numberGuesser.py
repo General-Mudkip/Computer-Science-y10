@@ -1,16 +1,16 @@
 import tkinter as tk
 from tkinter import font as tkFont
 import random
-import configFile
+import configFile as cf
 
 def guessingGame():
 
     answerNum = random.randint(1,100)
+    print(answerNum)
     global playerAttempts
     playerAttempts = 0
 
     def submit():
-        global returnVal
         try:
             pAnswer = inputBox.get()
             pAnswer = int(pAnswer)
@@ -23,9 +23,12 @@ def guessingGame():
             else:
                 answerLabel.config(text = f"Correct! {playerAttempts} guesses.")
                 if playerAttempts < 10:
-                    returnVal = 1
+                    cf.gGame_returnVal = 1
+                    return 1
                 else:
-                    returnVal = 0
+                    cf.gGame_returnVal = 0
+                    return 0
+                ngWindow.destroy()
         except:
             answerLabel.config(text = "Error Encountered! Guess again.")
 
@@ -50,6 +53,7 @@ def guessingGame():
     submitButton.grid(row = 3, column = 0)
 
     ngWindow.mainloop()
+    print("Fin")
 
 if __name__ == '__main__':
     guessingGame()
