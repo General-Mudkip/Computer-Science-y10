@@ -199,6 +199,8 @@ def displayEnd(ending):
     endScreen.title(f"New Ending - {endName}")
     endScreen.geometry("550x150")
 
+    player.unlockEnding(1)
+
     endName_label = tk.Label(endScreen, text = f"Ending Reached - {endName}", font = helv25)
     endText_label = tk.Label(endScreen, text = ending["text"], font = helv15)
     end2Text_label = tk.Label(endScreen, text = f"You've now unlocked {player.unlockedEndings}/{len(player.endDict)} endings.")
@@ -229,6 +231,7 @@ class playerState():
         pass
 
     def unlockEnding(self, ending):
+        self.unlockedEndings += 1
         self.endDict.update({ending:{"unlocked":True}})
 
 class room():
