@@ -229,8 +229,8 @@ class playerState():
         }
 
     def loseLife(self, lost):
+        self.heartDict[self.lives].config(image = emptyHeart_img)
         self.lives -= lost
-        # Code to manage hearts
 
     def resetGame(self):
         global endScreen
@@ -308,6 +308,8 @@ class room():
                 roomText.config(text = player.room.text)
                 player.loseLife(1)
             else:
+                interactButton.config(state = "active")
+                player.room.initState()
                 return
             player.room.puzzle = "fin"
             player.room.initState()
@@ -319,12 +321,13 @@ class room():
             if returnVal == "x":
                 player.room.text = player.room.winText
                 roomText.config(text = player.room.text)
+                player.room.puzzle = "fin"
             elif returnVal == "o":
                 player.room.text = player.room.loseText
                 roomText.config(text = player.room.text)
+                interactButton.config(state = "active")
             else:
-                return
-            player.room.puzzle = "fin"
+                interactButton.config(state = "active")
             player.room.initState()         
         else:
             displayEnd(player.endDict[player.room.puzzle], player.room.puzzle)
@@ -370,12 +373,17 @@ def endingsScreen(endings):
 # Initializes main images
 preHeart_img = Image.open("heart.png")
 preHeart_img = preHeart_img.resize((60, 60), Image.ANTIALIAS)
+preEmptyHeart_img = Image.open("emptyHeart.png")
+preEmptyHeart_img = preEmptyHeart_img.resize((60, 60), Image.ANTIALIAS)
+emptyHeart_img = ImageTk.PhotoImage(preEmptyHeart_img)
 heart_img = ImageTk.PhotoImage(preHeart_img)
 
 # Creates the heart labels
 heart1 = tk.Label(root, image = heart_img, anchor = "w")
 heart2 = tk.Label(root, image = heart_img, anchor = "w")
 heart3 = tk.Label(root, image = heart_img, anchor = "w")
+player.heartDict = {1:heart1, 2:heart2, 3:heart3}
+
 
 # Creates main text
 roomLabel = tk.Label(root, text = player.room.name, font = helv35)
