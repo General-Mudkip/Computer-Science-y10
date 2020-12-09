@@ -194,6 +194,7 @@ def guessingGame():
     submitButton.grid(row = 3, column = 0)
 
 def displayEnd(ending):
+    global endScreen
     endScreen = tk.Toplevel(root)
     endName = ending["name"]
     endScreen.title(f"New Ending - {endName}")
@@ -204,7 +205,7 @@ def displayEnd(ending):
     endName_label = tk.Label(endScreen, text = f"Ending Reached - {endName}", font = helv25)
     endText_label = tk.Label(endScreen, text = ending["text"], font = helv15)
     end2Text_label = tk.Label(endScreen, text = f"You've now unlocked {player.unlockedEndings}/{len(player.endDict)} endings.")
-    restartButton = tk.Button(endScreen, text = "Restart Game", command = player.startGame, font = helv20)
+    restartButton = tk.Button(endScreen, text = "Restart Game", command = player.resetGame, font = helv20)
 
     endName_label.grid(row = 0, column = 0, sticky = "w")
     endText_label.grid(row = 2, column = 0, sticky = "w")
@@ -227,12 +228,18 @@ class playerState():
         self.lives -= lost
         # Code to manage hearts
 
-    def startGame(self):
-        pass
+    def resetGame(self):
+        global endScreen
+        endScreen.destroy()
+        createRooms()
+        createNeighbours()
+        player.room = startingRoom
+        startingRoom.initState()
 
     def unlockEnding(self, ending):
-        self.unlockedEndings += 1
-        self.endDict.update({ending:{"unlocked":True}})
+        if self.endDict[ending]["unlocked"] != True:
+            self.unlockedEndings += 1
+        self.endDict[ending].update({"unlocked":True})
 
 class room():
     def __init__(self, puzzle, name, text, loseText, winText):
@@ -251,8 +258,9 @@ class room():
                             "test":"test"}
 
     def initState(self):
-        global secondLabel
-        global interactButton
+        global secondLabel, interactButton, roomLabel, roomText
+        roomLabel.config(text = player.room.name)
+        roomText.config(text = player.room.text)       
         dictList = ["left","right","up","down"]
         print("Initialized")
         for i in dictList:
@@ -271,8 +279,7 @@ class room():
 
 
     def moveRoom(self, direction):
-        global roomLabel
-        global roomText
+        global roomLabel, roomText
         player.room = self.neighbours[direction]["room"]
         roomLabel.config(text = player.room.name)
         roomText.config(text = player.room.text)
@@ -311,11 +318,20 @@ class room():
         else:
             displayEnd(player.endDict[player.room.puzzle])
             
+def createRooms():
+    global startingRoom, hallway1, doorway
+    startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Well that was a good effort... down one life!", "Hmm, maybe that was a bit too easy.")
+    hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "How did you... lose against yourself?", "I would have been worried if you hadn't won that.")
+    doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
 
-startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Well that was a good effort... down one life!", "Hmm, maybe that was a bit too easy.")
-hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "How did you... lose against yourself?", "I would have been worried if you hadn't won that.")
-doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
+def createNeighbours():
+    global startingRoom, hallway1, doorway
+    # Assigns the room's neighbours
+    startingRoom.assignNeighbours(False, False, hallway1, doorway)
+    doorway.assignNeighbours(False, False, startingRoom, False)
+    hallway1.assignNeighbours(False, False, False, startingRoom)
 
+createRooms()
 
 player = playerState(startingRoom, 3)
 
@@ -328,6 +344,7 @@ def endingsScreen(endings):
 
     row = 1
     for i in range(1,len(endings)+1):
+        print(endings[i])
         tempTitle = tk.Label(endingsWin, text = endings[i]["name"], font  = helv25, anchor = "w")
         tempLabel = tk.Label(endingsWin, text = f"Unlocked: {endings[i]['unlocked']} || {endings[i]['text']}")
         tempTitle.grid(row = row, column = 0, sticky = "w")
@@ -382,13 +399,7 @@ downArrow.grid(row = 5, column = 1)
 rightArrow.grid(row = 4, column = 2)
 interactButton.grid(row = 4, column = 1)
 
-#tttButton.grid(row = 1, column = 0, columnspan = 3)
-#ggButton.grid(row=2, column = 0, columnspan = 3)
-
-# Assigns the room's neighbours
-startingRoom.assignNeighbours(False, False, hallway1, doorway)
-doorway.assignNeighbours(False, False, startingRoom, False)
-hallway1.assignNeighbours(False, False, False, startingRoom)
+createNeighbours()
 
 startingRoom.initState()
 
