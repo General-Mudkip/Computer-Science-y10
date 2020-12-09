@@ -193,14 +193,14 @@ def guessingGame():
     answerLabel.grid(row = 1, column = 0)
     submitButton.grid(row = 3, column = 0)
 
-def displayEnd(ending):
+def displayEnd(ending, endingNo):
     global endScreen
     endScreen = tk.Toplevel(root)
     endName = ending["name"]
     endScreen.title(f"New Ending - {endName}")
     endScreen.geometry("550x150")
 
-    player.unlockEnding(1)
+    player.unlockEnding(endingNo)
 
     endName_label = tk.Label(endScreen, text = f"Ending Reached - {endName}", font = helv25)
     endText_label = tk.Label(endScreen, text = ending["text"], font = helv15)
@@ -316,7 +316,7 @@ class room():
             player.room.puzzle = "fin"
             player.room.initState()         
         else:
-            displayEnd(player.endDict[player.room.puzzle])
+            displayEnd(player.endDict[player.room.puzzle], player.room.puzzle)
             
 def createRooms():
     global startingRoom, hallway1, doorway
