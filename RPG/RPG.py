@@ -195,18 +195,22 @@ def guessingGame():
 
 def displayEnd(ending, endingNo):
     global endScreen
+    # Creates the end screen window
     endScreen = tk.Toplevel(root)
     endName = ending["name"]
     endScreen.title(f"New Ending - {endName}")
     endScreen.geometry("550x150")
 
+    # Updates the player's end dictionary
     player.unlockEnding(endingNo)
 
+    # Creates the labels
     endName_label = tk.Label(endScreen, text = f"Ending Reached - {endName}", font = helv25)
     endText_label = tk.Label(endScreen, text = ending["text"], font = helv15)
     end2Text_label = tk.Label(endScreen, text = f"You've now unlocked {player.unlockedEndings}/{len(player.endDict)} endings.")
-    restartButton = tk.Button(endScreen, text = "Restart Game", command = player.resetGame, font = helv20)
+    restartButton = tk.Button(endScreen, text = "Restart Game", command = player.resetGame, font = helv20) # Button to restart the game
 
+    # Displays widgets
     endName_label.grid(row = 0, column = 0, sticky = "w")
     endText_label.grid(row = 2, column = 0, sticky = "w")
     end2Text_label.grid(row = 1, column = 0, sticky = "w")
@@ -230,13 +234,17 @@ class playerState():
 
     def resetGame(self):
         global endScreen
+        # Closes the end screen window
         endScreen.destroy()
+        # Resets the the rooms' text and puzzles
         createRooms()
         createNeighbours()
         player.room = startingRoom
+        # Reloads the "map"
         startingRoom.initState()
 
     def unlockEnding(self, ending):
+        # Checks if the ending has already been unlocked
         if self.endDict[ending]["unlocked"] != True:
             self.unlockedEndings += 1
         self.endDict[ending].update({"unlocked":True})
@@ -245,7 +253,7 @@ class room():
     def __init__(self, puzzle, name, text, loseText, winText):
         self.name = name
         self.puzzle = puzzle
-        self.text = text
+        self.text = text # Text to display when the player enters a room
         self.loseText = loseText
         self.winText = winText
 
@@ -254,8 +262,7 @@ class room():
         self.neighbours = {"left":{"button":leftArrow, "room":left}, 
                             "right":{"button":rightArrow, "room":right}, 
                             "up":{"button":upArrow, "room":up}, 
-                            "down":{"button":downArrow, "room":down},
-                            "test":"test"}
+                            "down":{"button":downArrow, "room":down}}
 
     def initState(self):
         global secondLabel, interactButton, roomLabel, roomText
@@ -289,15 +296,16 @@ class room():
         global interactButton
         interactButton.config(state = "disabled")
         global roomText
-        print(player.room.puzzle)
         if player.room.puzzle == "gGame":
             guessingGame()
             root.wait_window(ngWindow)
             returnVal = cf.gGame_returnVal
             if returnVal == 1:
-                roomText.config(text = player.room.winText)
+                player.room.text = player.room.winText
+                roomText.config(text = player.room.text)
             elif returnVal == 0:
-                roomText.config(text = player.room.loseText)
+                player.room.text = player.room.loseText
+                roomText.config(text = player.room.text)
                 player.loseLife(1)
             else:
                 return
@@ -307,10 +315,13 @@ class room():
             ticTacToe()
             root.wait_window(tttWindow)
             returnVal = cf.tttGame_returnVal
+            print(returnVal)
             if returnVal == "x":
-                roomText.config(text = player.room.winText)
+                player.room.text = player.room.winText
+                roomText.config(text = player.room.text)
             elif returnVal == "o":
-                roomText.config(text = player.room.loseText)    
+                player.room.text = player.room.loseText
+                roomText.config(text = player.room.text)
             else:
                 return
             player.room.puzzle = "fin"
@@ -327,6 +338,7 @@ def createRooms():
 def createNeighbours():
     global startingRoom, hallway1, doorway
     # Assigns the room's neighbours
+    # assignNeighbours(Left, Right, Up, Down)
     startingRoom.assignNeighbours(False, False, hallway1, doorway)
     doorway.assignNeighbours(False, False, startingRoom, False)
     hallway1.assignNeighbours(False, False, False, startingRoom)
