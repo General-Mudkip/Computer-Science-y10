@@ -293,9 +293,8 @@ class room():
         player.room.initState()
 
     def interact(self):
-        global interactButton
+        global interactButton, roomText
         interactButton.config(state = "disabled")
-        global roomText
         if player.room.puzzle == "gGame":
             guessingGame()
             root.wait_window(ngWindow)
@@ -310,7 +309,9 @@ class room():
             else:
                 interactButton.config(state = "active")
                 player.room.initState()
+                cf.gGame_returnVal = -1
                 return
+            cf.gGame_returnVal = -1
             player.room.puzzle = "fin"
             player.room.initState()
         elif player.room.puzzle == "ttt":
@@ -328,6 +329,7 @@ class room():
                 interactButton.config(state = "active")
             else:
                 interactButton.config(state = "active")
+            cf.tttGame_returnVal = 0
             player.room.initState()         
         else:
             displayEnd(player.endDict[player.room.puzzle], player.room.puzzle)
