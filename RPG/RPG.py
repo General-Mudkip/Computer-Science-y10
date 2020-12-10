@@ -249,6 +249,7 @@ class playerState():
             self.unlockedEndings += 1
         self.endDict[ending].update({"unlocked":True})
 
+# Class used to create the rooms
 class room():
     def __init__(self, puzzle, name, text, loseText, winText):
         self.name = name
@@ -264,44 +265,48 @@ class room():
                             "up":{"button":upArrow, "room":up}, 
                             "down":{"button":downArrow, "room":down}}
 
+    # Loads the room
     def initState(self):
         global secondLabel, interactButton, roomLabel, roomText
+        # Edits the text to the appropriate room's
         roomLabel.config(text = player.room.name)
-        roomText.config(text = player.room.text)       
+        roomText.config(text = player.room.text)
+        # List to iterate through later
         dictList = ["left","right","up","down"]
         print("Initialized")
         for i in dictList:
-            neighbour = self.neighbours[i]
-            if neighbour["room"] == False:
+            neighbour = self.neighbours[i] # Ease of access
+            if neighbour["room"] == False: # Checks if there is a neighbouring room in that direction
                 neighbour["button"].config(state = "disabled", bg = "#ff8080")
-            else:
-                if self.puzzle == "fin":
+            else: # If not, loads appropriately
+                if self.puzzle == "fin": # Checks if the player has completed the puzzle
                     neighbour["button"].config(state = "active", bg = "white")
                 else:
                     neighbour["button"].config(state = "disabled", bg = "#ff8080")
-            if self.puzzle != "fin":    
-                interactButton.config(state = "active", bg = "white")
-            else:
-                interactButton.config(state = "disabled", bg = "#ff8080")
+        if self.puzzle != "fin": # Checks to see if the interact button needs to be locked or not
+            interactButton.config(state = "active", bg = "white")
+        else:
+            interactButton.config(state = "disabled", bg = "#ff8080")
 
 
     def moveRoom(self, direction):
         global roomLabel, roomText
-        player.room = self.neighbours[direction]["room"]
-        roomLabel.config(text = player.room.name)
+        player.room = self.neighbours[direction]["room"] # Sets the player's current room to the room at that given direction
+        roomLabel.config(text = player.room.name) 
         roomText.config(text = player.room.text)
         player.room.initState()
 
+    # Handles puzzle loading and outcome determination
     def interact(self):
         global interactButton, roomText
         interactButton.config(state = "disabled")
         if player.room.puzzle == "gGame":
             guessingGame()
-            root.wait_window(ngWindow)
-            returnVal = cf.gGame_returnVal
-            if returnVal == 1:
+            root.wait_window(ngWindow) # Pauses the following code until the game window has been closed
+            returnVal = cf.gGame_returnVal # Ease of use
+            if returnVal == 1: 
                 player.room.text = player.room.winText
-                roomText.config(text = player.room.text)
+                roomText.config(text = player.room.text) # Edits the room text to be the win text
             elif returnVal == 0:
                 player.room.text = player.room.loseText
                 roomText.config(text = player.room.text)
@@ -309,16 +314,16 @@ class room():
             else:
                 interactButton.config(state = "active")
                 player.room.initState()
-                cf.gGame_returnVal = -1
+                cf.gGame_returnVal = -1 # Resets cf.gGame_returnVal for future games (after in-game restart)
                 return
             cf.gGame_returnVal = -1
-            player.room.puzzle = "fin"
+            player.room.puzzle = "fin" # Prevents puzzle from being loaded again + allows loading of buttons
             player.room.initState()
         elif player.room.puzzle == "ttt":
+            # Follows same principles as above
             ticTacToe()
             root.wait_window(tttWindow)
             returnVal = cf.tttGame_returnVal
-            print(returnVal)
             if returnVal == "x":
                 player.room.text = player.room.winText
                 roomText.config(text = player.room.text)
@@ -332,8 +337,9 @@ class room():
             cf.tttGame_returnVal = 0
             player.room.initState()         
         else:
+            # If the puzzle is not any of the above, then it must be an ending.
             displayEnd(player.endDict[player.room.puzzle], player.room.puzzle)
-            
+ 
 def createRooms():
     global startingRoom, hallway1, doorway
     startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Well that was a good effort... down one life!", "Hmm, maybe that was a bit too easy.")
@@ -352,14 +358,19 @@ createRooms()
 
 player = playerState(startingRoom, 3)
 
+# Handles the ending screen window
 def endingsScreen(endings):
-    endingsWin = tk.Tk()
+    global endingsButton
+    endingsButton.config(state = "disabled")
+    endingsWin = tk.Toplevel()
     endingsWin.title("Your Unlocked Endings")
     endingsWin.geometry("600x300")
 
     endingsTitle = tk.Label(endingsWin, font = helv35, text = f"All Endings || {player.unlockedEndings}/{len(endings)} Unlocked\n---------------------------------------")
 
     row = 1
+    # Used to iterate through the ending dictionary, and display each value there
+    # This system doesn't require me to come back and edit when I need to add new endings
     for i in range(1,len(endings)+1):
         print(endings[i])
         tempTitle = tk.Label(endingsWin, text = endings[i]["name"], font  = helv25, anchor = "w")
@@ -369,8 +380,8 @@ def endingsScreen(endings):
         row += 2
 
     endingsTitle.grid(row = 0, column = 0, columnspan = 2, sticky = "w")
-
-    endingsWin.mainloop()
+    root.wait_window(endingsWin) # Waits until the player closes the ending screen
+    endingsButton.config(state = "active")
 
 # Initializes main images
 preHeart_img = Image.open("heart.png")
