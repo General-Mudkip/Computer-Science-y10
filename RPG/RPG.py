@@ -224,13 +224,18 @@ class playerState():
         self.lives = lives
         self.unlockedEndings = 0 
         # Dictionary to store different end conditions
-        self.endDict = {1:{"name":"Awkward...","unlocked":False, "text":"Well, you weren't supposed to do that.", "room":"Doorway"},
+        self.endDict = {0:{"name":"Death", "unlocked":False, "text":"Expected to be honest.", "room":"N/A"},
+                        1:{"name":"Awkward...","unlocked":False, "text":"Well, you weren't supposed to do that.", "room":"Doorway"},
                         2:{"name":"Finality","unlocked":False, "text":"You've beaten the game through the main route!", "room":"Placeholder"}
         }
 
     def loseLife(self, lost):
         self.heartDict[self.lives].config(image = emptyHeart_img)
         self.lives -= lost
+        if self.lives <= 0:
+            displayEnd(player.endDict[0], 0)
+            self.unlockEnding(0)
+
 
     def resetGame(self):
         global endScreen
@@ -339,20 +344,22 @@ class room():
         else:
             # If the puzzle is not any of the above, then it must be an ending.
             displayEnd(player.endDict[player.room.puzzle], player.room.puzzle)
- 
+
 def createRooms():
-    global startingRoom, hallway1, doorway
+    global startingRoom, hallway1, doorway, kitchen
     startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Well that was a good effort... down one life!", "Hmm, maybe that was a bit too easy.")
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "How did you... lose against yourself?", "I would have been worried if you hadn't won that.")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
+    kitchen = room(2, "Kitchen", "You see someone, stab them.", "Nice!", "Oh...")
 
 def createNeighbours():
-    global startingRoom, hallway1, doorway
+    global startingRoom, hallway1, doorway, kitchen
     # Assigns the room's neighbours
     # assignNeighbours(Left, Right, Up, Down)
-    startingRoom.assignNeighbours(False, False, hallway1, doorway)
+    startingRoom.assignNeighbours(False, kitchen, hallway1, doorway)
     doorway.assignNeighbours(False, False, startingRoom, False)
     hallway1.assignNeighbours(False, False, False, startingRoom)
+    kitchen.assignNeighbours(startingRoom, False, False, False)
 
 createRooms()
 
@@ -364,14 +371,14 @@ def endingsScreen(endings):
     endingsButton.config(state = "disabled")
     endingsWin = tk.Toplevel()
     endingsWin.title("Your Unlocked Endings")
-    endingsWin.geometry("600x300")
+    endingsWin.geometry("650x500")
 
     endingsTitle = tk.Label(endingsWin, font = helv35, text = f"All Endings || {player.unlockedEndings}/{len(endings)} Unlocked\n---------------------------------------")
 
     row = 1
     # Used to iterate through the ending dictionary, and display each value there
     # This system doesn't require me to come back and edit when I need to add new endings
-    for i in range(1,len(endings)+1):
+    for i in range(0,len(endings)):
         print(endings[i])
         tempTitle = tk.Label(endingsWin, text = endings[i]["name"], font  = helv25, anchor = "w")
         tempLabel = tk.Label(endingsWin, text = f"Unlocked: {endings[i]['unlocked']} || {endings[i]['text']}")
