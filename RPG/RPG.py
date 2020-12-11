@@ -237,6 +237,8 @@ class playerState():
             displayEnd(player.endDict[0], 0)
             self.unlockEnding(0)
             self.lives = 3
+            for i in range(1,4):
+                self.heartDict[i].config(image = heart_img)
 
 
     def resetGame(self):
