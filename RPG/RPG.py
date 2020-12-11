@@ -155,6 +155,7 @@ def guessingGame():
 
     def submit():
         try:
+            global gGame
             pAnswer = inputBox.get()
             pAnswer = int(pAnswer)
             global playerAttempts
@@ -165,11 +166,11 @@ def guessingGame():
                 answerLabel.config(text = "Too high!")
             else:
                 answerLabel.config(text = f"Correct! {playerAttempts} guesses.")
-                if playerAttempts < 10:
-                    cf.gGame_returnVal = 1
-                else:
-                    cf.gGame_returnVal = 0
-                global gGame
+                cf.gGame_returnVal = 1
+                gGame = False
+                ngWindow.destroy()
+            if playerAttempts >= 10:
+                cf.gGame_returnVal = 0
                 gGame = False
                 ngWindow.destroy()
         except:
@@ -235,6 +236,7 @@ class playerState():
         if self.lives <= 0:
             displayEnd(player.endDict[0], 0)
             self.unlockEnding(0)
+            self.lives = 3
 
 
     def resetGame(self):
@@ -312,18 +314,16 @@ class room():
             if returnVal == 1: 
                 player.room.text = player.room.winText
                 roomText.config(text = player.room.text) # Edits the room text to be the win text
+                interactButton.config(state = "active")
+                player.room.puzzle = "fin"
+                cf.gGame_returnVal = -1 # Resets cf.gGame_returnVal for future games (after in-game restart)
             elif returnVal == 0:
+                interactButton.config(state = "disabled")
                 player.room.text = player.room.loseText
                 roomText.config(text = player.room.text)
                 player.loseLife(1)
-            else:
-                interactButton.config(state = "active")
-                player.room.initState()
-                cf.gGame_returnVal = -1 # Resets cf.gGame_returnVal for future games (after in-game restart)
-                return
-            cf.gGame_returnVal = -1
-            player.room.puzzle = "fin" # Prevents puzzle from being loaded again + allows loading of buttons
             player.room.initState()
+            cf.gGame_returnVal = -1
         elif player.room.puzzle == "ttt":
             # Follows same principles as above
             ticTacToe()
