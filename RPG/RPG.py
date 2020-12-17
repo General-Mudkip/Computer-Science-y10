@@ -18,7 +18,7 @@ helv20 = tkFont.Font(family = "Helvetica", size = 17)
 helv25 = tkFont.Font(family = "Helvetica", size = 25)
 helv35 = tkFont.Font(family = "Helvetica", size = 35)
 
-oldTTDict = {}
+tooltipList = []
 
 # Function containing all of the tic tac toe code
 def ticTacToe():
@@ -233,17 +233,24 @@ class ToolTip(object):
         widget.bind('<Leave>', leave)
 
     def showTooltip(self):
-        self.tooltipwindow = tw = tk.Toplevel(self.widget)
-        tw.wm_overrideredirect(1) # Window without border and no normal means of closing
-        tw.wm_geometry("+{}+{}".format(self.widget.winfo_rootx(), self.widget.winfo_rooty())) # Sets size of tooltip
-        label = tk.Label(tw, text = self.text, background = "#ffffe0", relief = 'solid', borderwidth = 1)
-        label.pack() 
+        if self.widget["state"] != "disabled":
+            self.tooltipwindow = tw = tk.Toplevel(self.widget)
+            tw.wm_overrideredirect(1) # Window without border and no normal means of closing
+            tw.wm_geometry("+{}+{}".format(self.widget.winfo_rootx(), self.widget.winfo_rooty())) # Sets size of tooltip
+            label = tk.Label(tw, text = self.text, background = "#ffffe0", relief = 'solid', borderwidth = 1)
+            label.pack() 
+            tooltipList.append(self)
 
     def hideTooltip(self):
-        print(type(self.tooltipwindow))
+        for i in tooltipList:
+            if i.widget["state"] == "disabled":
+                i.tooltipwindow.destroy()
+                tooltipList.remove(self)
         if self.widget["state"] != "disabled" or type(self.tooltipwindow) == "tkinter.TopLevel":
-            self.tooltipwindow.destroy()
-            self.tooltipwindow = None
+            if self in tooltipList:
+                self.tooltipwindow.destroy()
+                tooltipList.remove(self)
+                self.tooltipwindow = None
 
 # Class to store player information
 class playerState():
@@ -319,6 +326,7 @@ class room():
                 if self.puzzle == "fin": # Checks if the player has completed the puzzle
                     neighbour["button"].config(state = "active", bg = "white")
                     idToolTip = ToolTip(neighbour["button"], text = neighbour["room"].name)
+                    print(idToolTip)
                 else:
                     neighbour["button"].config(state = "disabled", bg = "#ff8080")
         if self.puzzle != "fin": # Checks to see if the interact button needs to be locked or not
@@ -328,7 +336,10 @@ class room():
 
 
     def moveRoom(self, direction):
-        global roomLabel, roomText
+        global roomLabel, roomText, tooltipList
+        for i in tooltipList:
+            i.tooltipwindow.destroy()
+        tooltipList = []
         player.room = self.neighbours[direction]["room"] # Sets the player's current room to the room at that given direction
         roomLabel.config(text = player.room.name) 
         roomText.config(text = player.room.text)
