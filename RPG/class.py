@@ -1,9 +1,11 @@
-class room():
-    def __init__(self, name, text, puzzle):
-        self.name = name
+class string():
+    def __init__(self, text):
         self.text = text
-        self.puzzle = puzzle
-        self.lives = 3
+    
+    def uppercase(self):
+        self.text = self.text.upper()
 
-if 1 == 1:
-    direction = input("Where do you want to go? left, right")
+var = string("Hello")
+var.uppercase()
+
+print(var.text)

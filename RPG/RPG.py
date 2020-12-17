@@ -18,6 +18,8 @@ helv20 = tkFont.Font(family = "Helvetica", size = 17)
 helv25 = tkFont.Font(family = "Helvetica", size = 25)
 helv35 = tkFont.Font(family = "Helvetica", size = 35)
 
+oldTTDict = {}
+
 # Function containing all of the tic tac toe code
 def ticTacToe():
     # Initializes main window
@@ -217,6 +219,32 @@ def displayEnd(ending, endingNo):
     end2Text_label.grid(row = 1, column = 0, sticky = "w")
     restartButton.grid(row = 3, column= 0, sticky = "w")
 
+
+class ToolTip(object):
+    def __init__(self, widget, text):
+        self.widget = widget
+        self.text = text
+
+        def enter(event):
+            self.showTooltip()
+        def leave(event):
+            self.hideTooltip()
+        widget.bind('<Enter>', enter)
+        widget.bind('<Leave>', leave)
+
+    def showTooltip(self):
+        self.tooltipwindow = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(1) # Window without border and no normal means of closing
+        tw.wm_geometry("+{}+{}".format(self.widget.winfo_rootx(), self.widget.winfo_rooty())) # Sets size of tooltip
+        label = tk.Label(tw, text = self.text, background = "#ffffe0", relief = 'solid', borderwidth = 1)
+        label.pack() 
+
+    def hideTooltip(self):
+        print(type(self.tooltipwindow))
+        if self.widget["state"] != "disabled" or type(self.tooltipwindow) == "tkinter.TopLevel":
+            self.tooltipwindow.destroy()
+            self.tooltipwindow = None
+
 # Class to store player information
 class playerState():
 
@@ -290,6 +318,7 @@ class room():
             else: # If not, loads appropriately
                 if self.puzzle == "fin": # Checks if the player has completed the puzzle
                     neighbour["button"].config(state = "active", bg = "white")
+                    idToolTip = ToolTip(neighbour["button"], text = neighbour["room"].name)
                 else:
                     neighbour["button"].config(state = "disabled", bg = "#ff8080")
         if self.puzzle != "fin": # Checks to see if the interact button needs to be locked or not
@@ -304,6 +333,7 @@ class room():
         roomLabel.config(text = player.room.name) 
         roomText.config(text = player.room.text)
         player.room.initState()
+
 
     # Handles puzzle loading and outcome determination
     def interact(self):
@@ -353,6 +383,7 @@ def createRooms():
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "How did you... lose against yourself?", "I would have been worried if you hadn't won that.")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
     kitchen = room(2, "Kitchen", "You see someone, stab them.", "Nice!", "Oh...")
+
 
 def createNeighbours():
     global startingRoom, hallway1, doorway, kitchen
@@ -414,16 +445,14 @@ secondLabel = tk.Label(root, text = "Choose a direction to go:", font = helv15)
 
 # Creates buttons
 endingsButton = tk.Button(root, text = "Unlocked Endings", font = helv15, command = lambda: endingsScreen(player.endDict))
-tttButton = tk.Button(root, text = "Play Tic Tac Toe", command = tttGame) # Button to start Tic Tac Toe
-ggButton = tk.Button(root, text = "Play Number Guesser", command = guessingGame) # Button to start Guessing Game
+restartButton = tk.Button(root, text = "Restart", font = helv15, command = player.resetGame)
 upArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "^", font = helv15, command = lambda: player.room.moveRoom("up"))
 leftArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "<", font = helv15, command = lambda: player.room.moveRoom("left"))
 downArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "v", font = helv15, command = lambda: player.room.moveRoom("down"))
 rightArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = ">", font = helv15, command = lambda: player.room.moveRoom("right")) 
 interactButton = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "x", font = helv15, command = player.room.interact)
-
 # Creates empty canvas spaces
-topCanvas = tk.Canvas(root, width = 160, height = 10)
+topCanvas = tk.Canvas(root, width = 75, height = 10)
 
 # Displays the created widgets
 heart1.grid(row = 0, column = 0)
@@ -432,7 +461,7 @@ heart3.grid(row = 0, column = 2)
 roomLabel.grid(row = 0, column = 3, padx = 20)
 secondLabel.grid(row = 2, column = 0, columnspan = 3)
 topCanvas.grid(row = 0, column = 4, columnspan = 1)
-endingsButton.grid(row = 0, column = 5)
+endingsButton.grid(row = 0, column = 6)
 roomText.grid(row = 1, column = 0, columnspan = 8, sticky = "w")
 
 upArrow.grid(row = 3, column = 1)
@@ -440,6 +469,7 @@ leftArrow.grid(row = 4, column = 0)
 downArrow.grid(row = 5, column = 1)
 rightArrow.grid(row = 4, column = 2)
 interactButton.grid(row = 4, column = 1)
+restartButton.grid(row = 0, column = 5)
 
 createNeighbours()
 
