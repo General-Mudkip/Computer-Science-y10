@@ -8,7 +8,7 @@ import time
 
 # Initializes main window
 root = tk.Tk()
-root.geometry("800x600")
+root.geometry("700x600")
 root.title("RPG - Bence Redmond")
 
 # Creates fonts
@@ -211,7 +211,7 @@ def displayEnd(ending, endingNo):
     endName_label = tk.Label(endScreen, text = f"Ending Reached - {endName}", font = helv25)
     endText_label = tk.Label(endScreen, text = ending["text"], font = helv15)
     end2Text_label = tk.Label(endScreen, text = f"You've now unlocked {player.unlockedEndings}/{len(player.endDict)} endings.")
-    restartButton = tk.Button(endScreen, text = "Restart Game", command = player.resetGame, font = helv20) # Button to restart the game
+    restartButton = tk.Button(endScreen, text = "Restart Game", command = lambda: player.resetGame(endScreen), font = helv20) # Button to restart the game
 
     # Displays widgets
     endName_label.grid(row = 0, column = 0, sticky = "w")
@@ -276,10 +276,9 @@ class playerState():
                 self.heartDict[i].config(image = heart_img)
 
 
-    def resetGame(self):
-        global endScreen
+    def resetGame(self, destroyWindow):
         # Closes the end screen window
-        endScreen.destroy()
+        destroyWindow.destroy()
         # Resets the the rooms' text and puzzles
         createRooms()
         createNeighbours()
@@ -434,6 +433,15 @@ def endingsScreen(endings):
     root.wait_window(endingsWin) # Waits until the player closes the ending screen
     endingsButton.config(state = "active")
 
+def displayMenu():
+    global endingsButton, restartButton
+    menuWindow = tk.Toplevel()
+    menuWindow.geometry("200x400")
+    endingsButton = tk.Button(menuWindow, text = "Unlocked Endings", font = helv15, command = lambda: endingsScreen(player.endDict))
+    restartButton = tk.Button(menuWindow, text = "Restart", font = helv15, command = lambda: player.resetGame(menuWindow))
+    endingsButton.pack()
+    restartButton.pack()
+
 # Initializes main images
 preHeart_img = Image.open("heart.png")
 preHeart_img = preHeart_img.resize((60, 60), Image.ANTIALIAS)
@@ -455,15 +463,14 @@ roomText = tk.Label(root, text = player.room.text, font = helv20)
 secondLabel = tk.Label(root, text = "Choose a direction to go:", font = helv15)
 
 # Creates buttons
-endingsButton = tk.Button(root, text = "Unlocked Endings", font = helv15, command = lambda: endingsScreen(player.endDict))
-restartButton = tk.Button(root, text = "Restart", font = helv15, command = player.resetGame)
+menuButton = tk.Button(root, text = "Menu", font = helv25, command = displayMenu)
 upArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "^", font = helv15, command = lambda: player.room.moveRoom("up"))
 leftArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "<", font = helv15, command = lambda: player.room.moveRoom("left"))
 downArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "v", font = helv15, command = lambda: player.room.moveRoom("down"))
 rightArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = ">", font = helv15, command = lambda: player.room.moveRoom("right")) 
 interactButton = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "x", font = helv15, command = player.room.interact)
 # Creates empty canvas spaces
-topCanvas = tk.Canvas(root, width = 75, height = 10)
+topCanvas = tk.Canvas(root, width = 120, height = 10)
 
 # Displays the created widgets
 heart1.grid(row = 0, column = 0)
@@ -472,7 +479,6 @@ heart3.grid(row = 0, column = 2)
 roomLabel.grid(row = 0, column = 3, padx = 20)
 secondLabel.grid(row = 2, column = 0, columnspan = 3)
 topCanvas.grid(row = 0, column = 4, columnspan = 1)
-endingsButton.grid(row = 0, column = 6)
 roomText.grid(row = 1, column = 0, columnspan = 8, sticky = "w")
 
 upArrow.grid(row = 3, column = 1)
@@ -480,7 +486,7 @@ leftArrow.grid(row = 4, column = 0)
 downArrow.grid(row = 5, column = 1)
 rightArrow.grid(row = 4, column = 2)
 interactButton.grid(row = 4, column = 1)
-restartButton.grid(row = 0, column = 5)
+menuButton.grid(row = 0, column = 5)
 
 createNeighbours()
 
