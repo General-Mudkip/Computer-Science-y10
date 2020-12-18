@@ -436,9 +436,11 @@ def endingsScreen(endings):
 def displayMenu():
     global endingsButton, restartButton
     menuWindow = tk.Toplevel()
-    menuWindow.geometry("200x400")
-    endingsButton = tk.Button(menuWindow, text = "Unlocked Endings", font = helv15, command = lambda: endingsScreen(player.endDict))
-    restartButton = tk.Button(menuWindow, text = "Restart", font = helv15, command = lambda: player.resetGame(menuWindow))
+    menuWindow.geometry("220x200")
+    menuTitle = tk.Label(menuWindow, text = "Menu", font = helv35)
+    endingsButton = tk.Button(menuWindow, text = "Unlocked Endings", font = helv20, command = lambda: endingsScreen(player.endDict))
+    restartButton = tk.Button(menuWindow, text = "Restart", font = helv20, command = lambda: player.resetGame(menuWindow))
+    menuTitle.pack()
     endingsButton.pack()
     restartButton.pack()
 
