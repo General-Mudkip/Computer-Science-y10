@@ -8,7 +8,7 @@ import time
 
 # Initializes main window
 root = tk.Tk()
-root.geometry("700x600")
+root.geometry("720x600")
 root.title("RPG - Bence Redmond")
 
 # Creates fonts
@@ -465,14 +465,14 @@ roomText = tk.Label(root, text = player.room.text, font = helv20)
 secondLabel = tk.Label(root, text = "Choose a direction to go:", font = helv15)
 
 # Creates buttons
-menuButton = tk.Button(root, text = "Menu", font = helv25, command = displayMenu)
+menuButton = tk.Button(root, text = "Menu", font = helv25, borderwidth = 5, command = displayMenu)
 upArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "^", font = helv15, command = lambda: player.room.moveRoom("up"))
 leftArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "<", font = helv15, command = lambda: player.room.moveRoom("left"))
 downArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "v", font = helv15, command = lambda: player.room.moveRoom("down"))
 rightArrow = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = ">", font = helv15, command = lambda: player.room.moveRoom("right")) 
 interactButton = tk.Button(root, bg = "#ff8080", width = 6, height = 3, state = "disabled", text = "x", font = helv15, command = player.room.interact)
 # Creates empty canvas spaces
-topCanvas = tk.Canvas(root, width = 120, height = 10)
+topCanvas = tk.Canvas(root, width = 140, height = 10)
 
 # Displays the created widgets
 heart1.grid(row = 0, column = 0)
