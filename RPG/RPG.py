@@ -221,6 +221,7 @@ def displayEnd(ending, endingNo):
 
 
 class ToolTip(object):
+    # Throws a lot of errors but works fine
     def __init__(self, widget, text):
         self.widget = widget
         self.text = text

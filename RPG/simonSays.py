@@ -3,6 +3,8 @@ from tkinter import font as tkFont
 import random
 import time
 
+# Doesn't work unfortunately due to how tkinter updates button colours.
+
 # Initialize main window
 ssWindow = tk.Tk()
 ssWindow.title("Simon Says")
