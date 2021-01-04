@@ -1,3 +1,2 @@
-func = lambda x: x + 1
-
-print(func(1))
+func = lambda x, y: x + y
+print(func(1,2))

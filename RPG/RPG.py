@@ -388,6 +388,7 @@ class room():
             displayEnd(player.endDict[player.room.puzzle], player.room.puzzle)
 
 def createRooms():
+    # room() takes the puzzle, name of room, text to display when the player enters, text to display when the players loses/wins.
     global startingRoom, hallway1, doorway, kitchen
     startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Well that was a good effort... down one life!", "Hmm, maybe that was a bit too easy.")
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "How did you... lose against yourself?", "I would have been worried if you hadn't won that.")
@@ -397,7 +398,7 @@ def createRooms():
 
 def createNeighbours():
     global startingRoom, hallway1, doorway, kitchen
-    # Assigns the room's neighbours
+    # Assigns the room's neighbours as room objects
     # assignNeighbours(Left, Right, Up, Down)
     startingRoom.assignNeighbours(False, kitchen, hallway1, doorway)
     doorway.assignNeighbours(False, False, startingRoom, False)
