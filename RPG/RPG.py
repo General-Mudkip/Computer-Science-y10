@@ -196,6 +196,64 @@ def guessingGame():
     answerLabel.grid(row = 1, column = 0)
     submitButton.grid(row = 3, column = 0)
 
+def codeEnter(code):
+    # Initialize main window
+    global ceWindow
+    ceWindow = tk.Toplevel()
+    ceWindow.title("Keypad")
+    ceWindow.geometry("233x320")
+
+    # Initialize widgets
+    display = tk.Entry(ceWindow, width = 17, borderwidth = 5, font = helv20)
+    display.grid(row = 0, column = 0, columnspan = 3)
+
+    def button_click(num):
+        newText = display.get() + str(num)
+        display.delete(0, tk.END)
+        display.insert(0, newText)
+
+    def submit():
+        answer = display.get()
+        if answer == code:
+            display.delete(0, tk.END)
+            display.insert(0, "Correct!")
+            display.update()
+            time.sleep(2)
+            cf.ceGame_returnVal = "correct"
+            ceWindow.destroy()
+        else:
+            display.delete(0, tk.END)
+            display.insert(0, "Incorrect!")
+            display.update()
+            time.sleep(2)
+            display.delete(0, tk.END)
+
+    text = tk.Label(ceWindow, text = "Enter The Code.")
+    button_1 = tk.Button(ceWindow, text = "1", padx = 30, pady = 20, command = lambda: button_click(1))
+    button_2 = tk.Button(ceWindow, text = "2", padx = 30, pady = 20, command = lambda: button_click(2))
+    button_3 = tk.Button(ceWindow, text = "3", padx = 30, pady = 20, command = lambda: button_click(3))
+    button_4 = tk.Button(ceWindow, text = "4", padx = 30, pady = 20, command = lambda: button_click(4))
+    button_5 = tk.Button(ceWindow, text = "5", padx = 30, pady = 20, command = lambda: button_click(5))
+    button_6 = tk.Button(ceWindow, text = "6", padx = 30, pady = 20, command = lambda: button_click(6))
+    button_7 = tk.Button(ceWindow, text = "7", padx = 30, pady = 20, command = lambda: button_click(7))
+    button_8 = tk.Button(ceWindow, text = "8", padx = 30, pady = 20, command = lambda: button_click(8))
+    button_9 = tk.Button(ceWindow, text = "9", padx = 30, pady = 20, command = lambda: button_click(9))
+    button_0 = tk.Button(ceWindow, text = "0", padx = 30, pady = 20, command = lambda: button_click(0))
+    submit = tk.Button(ceWindow, text = "Submit", padx = 53, pady = 20, command = submit)
+
+    button_1.grid(row=3, column=0)
+    button_2.grid(row=3, column=1)
+    button_3.grid(row=3, column=2)
+    button_4.grid(row=2, column=0)
+    button_5.grid(row=2, column=1)
+    button_6.grid(row=2, column=2)
+    button_7.grid(row=1, column=0)
+    button_8.grid(row=1, column=1)
+    button_9.grid(row=1, column=2)
+    button_0.grid(row=4, column=0)
+    submit.grid(row=4, column=1, columnspan=2)
+    text.grid(row = 5, column = 0, columnspan = 4) 
+
 def displayEnd(ending, endingNo):
     global endScreen
     # Creates the end screen window
@@ -263,7 +321,7 @@ class playerState():
         # Dictionary to store different end conditions
         self.endDict = {0:{"name":"Death", "unlocked":False, "text":"Expected to be honest.", "room":"N/A"},
                         1:{"name":"Awkward...","unlocked":False, "text":"Well, you weren't supposed to do that.", "room":"Doorway"},
-                        2:{"name":"Finality","unlocked":False, "text":"You've beaten the game through the main route!", "room":"Placeholder"}
+                        2:{"name":"Scaredy Cat","unlocked":False, "text":"Hide from your fears.", "room":"Closet"}
         }
 
     def loseLife(self, lost):
@@ -295,7 +353,7 @@ class playerState():
 
 # Class used to create the rooms
 class room():
-    def __init__(self, puzzle, name, text, loseText, winText):
+    def __init__(self, puzzle, name, text, winText, loseText):
         self.name = name
         self.puzzle = puzzle
         self.text = text # Text to display when the player enters a room
@@ -383,28 +441,68 @@ class room():
             else:
                 interactButton.config(state = "active")
             cf.tttGame_returnVal = 0
-            player.room.initState()         
+            player.room.initState()
+        elif player.room.puzzle == "code":
+            codeEnter("64835")
+            root.wait_window(ceWindow)
+            returnVal = cf.ceGame_returnVal
+            if returnVal == "correct":
+                player.room.text = player.room.winText
+                roomText.config(text = player.room.text)
+                player.room.puzzle = "fin"
+        elif player.room.puzzle == "none":
+            player.room.puzzle = "fin"
+            roomText.config(text = player.room.winText)
         else:
             # If the puzzle is not any of the above, then it must be an ending.
             displayEnd(player.endDict[player.room.puzzle], player.room.puzzle)
 
 def createRooms():
     # room() takes the puzzle, name of room, text to display when the player enters, text to display when the players loses/wins.
-    global startingRoom, hallway1, doorway, kitchen
-    startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Well that was a good effort... down one life!", "Hmm, maybe that was a bit too easy.")
-    hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "How did you... lose against yourself?", "I would have been worried if you hadn't won that.")
+    global startingRoom, hallway1, doorway, kitchen, ballroom, hallway2, bossroom, slide, stairs1, basement, closet, stairs2, cellar, theatre, dining_room, hallway3, kitchen, closet2, hallway4, living_room
+    startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!")
+    hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "I would have been worried if you hadn't won that.", "How did you... lose against yourself?")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
-    kitchen = room(2, "Kitchen", "You see someone, stab them.", "Nice!", "Oh...")
-
+    ballroom = room("none", "Ballroom", "Pop quiz! No dancing or music unfortunately.", "Maybe I should have made the questions a bit harder.", "You should brush up on your trivia.")
+    hallway2 = room("code", "Hallway", "You here a faint hum ahead. Spooky.", "There's no turning back once you go forward.", "Go and explore more. Open up the endings screen to see what you have so far.")
+    bossroom = room("none", "Boss Room", "Prepare to die fool!", "Ouch.", "Muahahaha! Try again.")
+    slide = room("none", "Slide!", "Down you go!", "N/A", "N/A")
+    stairs1 = room("none", "Basement Stairs", "The stairs lead down to a very dark room.", "I should stop using these number guessing games.", " Get good.")
+    basement = room("none", "Basement", "Ahhhh! I'm joking. Why would I get scared in my own house?", "Well, you've still got a ways to go.", "Hahahahaha.")
+    closet = room(2, "Closet", "Just hide and everything will be alright.", "N/A", "N/A")
+    stairs2 = room("none", "Deeper Stairs", "These lead deeper down...", "Good luck in the next room. Hehehe...", "Come on. You just have to pick a door.")
+    cellar = room("none", "Wine Cellar", "Ah, a proud collection. Don't touch anything!", "That was expensive...", "Serves you right!")
+    theatre = room(3, "Theatre", "Sometimes it's nice to relax with some popcorn and watch a movie.", "N/A", "N/A")
+    dining_room = room("none", "Dining Room", "Good luck finding your way through this maze of tables.", "Well. I've got to commend you on that.", "If you stick to the right it might work.")
+    hallway3 = room("ttt", "Hallway", "Maybe this will stump you.", "Well, congrats. You've done the bare minimum.", "How...?")
+    kitchen = room("none", "Kitchen", "Let's test your cooking skills.", "A fellow food enthusiast I see.", "How many times have you cooked in your life?")
+    closet2 = room(4, "Food Closet", "Eat your problems away.", "N/A", "N/A")
+    hallway4 = room("none", "Hallway", "I sure hope you were brought up right.", "Obviously not.", "Your parents raised you well.")
+    living_room = room("none", "Living Room", "Let's watch some TV and relax.", "Nice job changing the channels.","Have you never used a remote in your life?")
 
 def createNeighbours():
     global startingRoom, hallway1, doorway, kitchen
     # Assigns the room's neighbours as room objects
     # assignNeighbours(Left, Right, Up, Down)
-    startingRoom.assignNeighbours(False, kitchen, hallway1, doorway)
+    startingRoom.assignNeighbours(False, False, hallway1, doorway)
     doorway.assignNeighbours(False, False, startingRoom, False)
-    hallway1.assignNeighbours(False, False, False, startingRoom)
-    kitchen.assignNeighbours(startingRoom, False, False, False)
+    hallway1.assignNeighbours(False, False, ballroom, startingRoom)
+    ballroom.assignNeighbours(stairs1, dining_room, hallway2, hallway1)
+    hallway2.assignNeighbours(slide, False, bossroom, ballroom)
+    bossroom.assignNeighbours(False, False, False, hallway2)
+    slide.assignNeighbours(basement, False, False, False)
+    stairs1.assignNeighbours(basement, ballroom, False, False)
+    basement.assignNeighbours(False, stairs1, closet, stairs2)
+    closet.assignNeighbours(False, False, False, basement)
+    stairs2.assignNeighbours(False, False, basement, cellar)
+    cellar.assignNeighbours(False, theatre, stairs2, False)
+    theatre.assignNeighbours(cellar, False, False, False)
+    dining_room.assignNeighbours(ballroom, False, hallway3, hallway4)
+    hallway3.assignNeighbours(False, False, kitchen, dining_room)
+    kitchen.assignNeighbours(False, False, closet2, hallway3)
+    closet2.assignNeighbours(False, False, False, kitchen)
+    hallway4.assignNeighbours(False, False, dining_room, living_room)
+    living_room.assignNeighbours(False, False, hallway4, False)
 
 createRooms()
 
