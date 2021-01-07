@@ -4,6 +4,7 @@ import random
 import time
 
 # Doesn't work unfortunately due to how tkinter updates button colours.
+# I've tried a few workarounds but can't get past the issue of the mainloop being paused whenever time.sleep() is called.
 
 # Initialize main window
 ssWindow = tk.Tk()
@@ -21,15 +22,19 @@ queue = []
 
 def nextRound():
     queue.append(random.randint(1,16))
+    for i in panelDict:
+        panelDict[i].config(state = "active", bg = "white")
+        panelDict[i].update()
+    ssWindow.update_idletasks()
     for i in queue:
         time.sleep(0.5)
         panelDict[i].config(bg = "blue")
-        ssWindow.update()
+        panelDict[i].update()
+        ssWindow.update_idletasks()
         time.sleep(1)
         panelDict[i].config(bg = "white")
-        ssWindow.update()
-    for i in panelDict:
-        panelDict[i].config(state = "active", bg = "white")
+        panelDict[i].update()
+        ssWindow.update_idletasks()
     ssWindow.update()
 
 def submit():
