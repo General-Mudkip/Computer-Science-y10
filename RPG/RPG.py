@@ -321,7 +321,9 @@ class playerState():
         # Dictionary to store different end conditions
         self.endDict = {0:{"name":"Death", "unlocked":False, "text":"Expected to be honest.", "room":"N/A"},
                         1:{"name":"Awkward...","unlocked":False, "text":"Well, you weren't supposed to do that.", "room":"Doorway"},
-                        2:{"name":"Scaredy Cat","unlocked":False, "text":"Hide from your fears.", "room":"Closet"}
+                        2:{"name":"Scaredy Cat","unlocked":False, "text":"Hide from your fears.", "room":"Closet"},
+                        3:{"name":"Relaxation Time","unlocked":False,"text":"Sometimes you just need to sit back and relax.","room":"Theatre"},
+                        4:{"name":"Tasty!","unlocked":False, "text":"Too much food...","room":"Food Closet"}
         }
 
     def loseLife(self, lost):
@@ -379,8 +381,10 @@ class room():
         for i in dictList:
             neighbour = self.neighbours[i] # Ease of access
             if neighbour["room"] == False: # Checks if there is a neighbouring room in that direction
-                neighbour["button"].config(state = "disabled", bg = "#ff8080")
+                neighbour["button"].grid_remove()
+                # neighbour["button"].config(state = "disabled", bg = "#ff8080")
             else: # If not, loads appropriately
+                neighbour["button"].grid()
                 if self.puzzle == "fin": # Checks if the player has completed the puzzle
                     neighbour["button"].config(state = "active", bg = "white")
                     idToolTip = ToolTip(neighbour["button"], text = neighbour["room"].name)
@@ -450,9 +454,11 @@ class room():
                 player.room.text = player.room.winText
                 roomText.config(text = player.room.text)
                 player.room.puzzle = "fin"
+            player.room.initState()
         elif player.room.puzzle == "none":
             player.room.puzzle = "fin"
             roomText.config(text = player.room.winText)
+            player.room.initState()
         else:
             # If the puzzle is not any of the above, then it must be an ending.
             displayEnd(player.endDict[player.room.puzzle], player.room.puzzle)
