@@ -277,6 +277,15 @@ def displayEnd(ending, endingNo):
     end2Text_label.grid(row = 1, column = 0, sticky = "w")
     restartButton.grid(row = 3, column= 0, sticky = "w")
 
+def wineGuesser():
+    global wgWindow
+    wgWindow = tk.Toplevel()
+    wgWindow.title("Wine Guesser")
+    wgWindow.geometry("500x300")
+
+    titleLabel = tk.Label(wgWindow, text = "Wine Guesser", font = helv25)
+
+    titleLabel.grid(row = 0, column = 0)
 
 class ToolTip(object):
     # Throws a lot of errors but works fine
@@ -390,7 +399,10 @@ class room():
                     idToolTip = ToolTip(neighbour["button"], text = neighbour["room"].name)
                     print(idToolTip)
                 else:
-                    neighbour["button"].config(state = "disabled", bg = "#ff8080")
+                    if neighbour["room"].puzzle == "fin":
+                            neighbour["button"].config(state = "active", bg = "white")
+                    else:
+                        neighbour["button"].config(state = "disabled", bg = "#ff8080")
         if self.puzzle != "fin": # Checks to see if the interact button needs to be locked or not
             interactButton.config(state = "active", bg = "white")
         else:
@@ -455,6 +467,19 @@ class room():
                 roomText.config(text = player.room.text)
                 player.room.puzzle = "fin"
             player.room.initState()
+        elif player.room.puzzle == "wGame":
+            wineGuesser()
+            root.wait_window(wgWindow)
+            returnVal = cf.wgGame_returnVal
+            if returnVal == 1:
+                player.room.text = player.room.winText
+                roomText.config(text = player.room.text)
+                player.room.puzzle = "fin"
+            else:
+                interactButton.config(state = "disabled")
+                player.room.text = player.room.loseText
+                roomText.config(text = player.room.text)
+                player.loseLife(1)
         elif player.room.puzzle == "none":
             player.room.puzzle = "fin"
             roomText.config(text = player.room.winText)
