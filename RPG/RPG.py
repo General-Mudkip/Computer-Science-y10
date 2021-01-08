@@ -284,8 +284,19 @@ def wineGuesser():
     wgWindow.geometry("500x300")
 
     titleLabel = tk.Label(wgWindow, text = "Wine Guesser", font = helv25)
+    descLabel = tk.Label(wgWindow, text = "Choose a poi- wine. Be careful now.", font = helv15)
 
-    titleLabel.grid(row = 0, column = 0)
+    # Create wine bottles
+    preWine1_img = Image.open("winebottle1.png")
+    wine1_img = preWine1_img.resize((60, 60), Image.ANTIALIAS)
+
+    # Creates image lables
+    wine1 = tk.Label(wgWindow, image = wine1_img)
+
+    titleLabel.grid(row = 0, column = 0, sticky = "w", columnspan = 2)
+    descLabel.grid(row = 1, column = 0, sticky = "w", columnspan = 2)
+    wine1.grid(row = 2, column = 0)
+
 
 class ToolTip(object):
     # Throws a lot of errors but works fine
@@ -480,6 +491,8 @@ class room():
                 player.room.text = player.room.loseText
                 roomText.config(text = player.room.text)
                 player.loseLife(1)
+            cf.wgGame_returnVal = -1
+            player.room.initState()
         elif player.room.puzzle == "none":
             player.room.puzzle = "fin"
             roomText.config(text = player.room.winText)
@@ -491,7 +504,7 @@ class room():
 def createRooms():
     # room() takes the puzzle, name of room, text to display when the player enters, text to display when the players loses/wins.
     global startingRoom, hallway1, doorway, kitchen, ballroom, hallway2, bossroom, slide, stairs1, basement, closet, stairs2, cellar, theatre, dining_room, hallway3, kitchen, closet2, hallway4, living_room
-    startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!")
+    startingRoom = room("wGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!")
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "I would have been worried if you hadn't won that.", "How did you... lose against yourself?")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
     ballroom = room("none", "Ballroom", "Pop quiz! No dancing or music unfortunately.", "Maybe I should have made the questions a bit harder.", "You should brush up on your trivia.")
@@ -579,7 +592,7 @@ def displayMenu():
 preHeart_img = Image.open("heart.png")
 preHeart_img = preHeart_img.resize((60, 60), Image.ANTIALIAS)
 preEmptyHeart_img = Image.open("emptyHeart.png")
-preEmptyHeart_img = preEmptyHeart_img.resize((60, 60), Image.ANTIALIAS)
+preEmptyHeart_img = preEmptyHeart_img.resize((60, 60))
 emptyHeart_img = ImageTk.PhotoImage(preEmptyHeart_img)
 heart_img = ImageTk.PhotoImage(preHeart_img)
 
