@@ -15,8 +15,8 @@ helv35 = tkFont.Font(family = "Helvetica", size = 35)
 questionNo = 1
 correctAnswer = 0
 
-questionsDict = {1:{"q":"What's my Name?", "answers":{1:"Bence", 2:"Idiot", 3:"AMAZING INDIVIDUAL", 4:"GENIUS"}, "c":1},
-                 2:{"q":"What's Nina's name?","answers":{1:"HMMM",2:"IDOT",3:"NIAN",4:"UNREADABLE"},"c":3}}
+questionsDict = {1:{"q":"How old am I?", "answers":{1:"I don't know", 2:"INT", 3:"FLOAT", 4:"14"}, "c":4},
+                 2:{"q":"What's my name?","answers":{1:"James",2:"Dolt",3:"Bence",4:"Arthur"},"c":3}}
 
 def submit(answer):
     global qName, qDesc, questionNo, correctAnswer

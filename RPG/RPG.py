@@ -288,15 +288,78 @@ def wineGuesser():
 
     # Create wine bottles
     preWine1_img = Image.open("winebottle1.png")
-    wine1_img = preWine1_img.resize((60, 60), Image.ANTIALIAS)
+    preWine1_img = preWine1_img.resize((60, 60))
+    wine1_img = ImageTk.PhotoImage(preWine1_img)
 
     # Creates image lables
     wine1 = tk.Label(wgWindow, image = wine1_img)
+    #titleLabel.grid(row = 0, column = 0, sticky = "w", columnspan = 2)
+    #descLabel.grid(row = 1, column = 0, sticky = "w", columnspan = 2)
+    wine1.grid(row = 1, column = 0)
 
-    titleLabel.grid(row = 0, column = 0, sticky = "w", columnspan = 2)
-    descLabel.grid(row = 1, column = 0, sticky = "w", columnspan = 2)
-    wine1.grid(row = 2, column = 0)
+def multipleChoice():
+    global mcWindow, questionNo, correctAnswer
+    mcWindow = tk.Toplevel()
+    mcWindow.title("Quiz")
+    mcWindow.geometry("500x200")
 
+    questionNo = 1
+    correctAnswer = 0
+
+    questionsDict = {1:{"q":"How old am I?", "answers":{1:"I don't know", 2:"INT", 3:"FLOAT", 4:"14"}, "c":4},
+                    2:{"q":"What's my name?","answers":{1:"James",2:"Dolt",3:"Bence",4:"Arthur"},"c":3}}
+
+    def submit(answer):
+        global qName, qDesc, questionNo, correctAnswer
+        try:
+            if answer == questionsDict[questionNo]["c"]:
+                print("CORRECT")
+                correctAnswer += 1
+                qDesc.config(text = "Correct!")
+            else:
+                print("NOOOO")
+                qDesc.config(text = "Incorrect!")
+            questionNo += 1
+            qName.config(text = questionsDict[questionNo]["q"])
+            for i in range(1,5):
+                buttonDict[i].config(text = questionsDict[questionNo]["answers"][i])
+        except KeyError:
+            qDesc.config(text = "End of Game!")
+            qName.config(text = f"You got: {correctAnswer}/{len(questionsDict)}")
+            for i in range(1,5):
+                buttonDict[i].config(state = "disabled")
+            time.sleep(1)
+            if correctAnswer >= len(questionsDict)/2:
+                cf.mcGame_returnVal = 1
+            else:
+                cf.mcGame_returnVal = 0
+            mcWindow.destroy()
+
+    title = tk.Label(mcWindow, text = "Multiple Choice Quiz", font = helv25)
+    a1 = tk.Button(mcWindow, font = helv10, command = lambda: submit(1))
+    a2 = tk.Button(mcWindow, font = helv10, command = lambda: submit(2))
+    a3 = tk.Button(mcWindow, font = helv10, command = lambda: submit(3))
+    a4 = tk.Button(mcWindow, font = helv10, command = lambda: submit(4))
+
+    a1.grid(row = 3, column = 0)
+    a2.grid(row = 3, column = 1)
+    a3.grid(row = 3, column = 2)
+    a4.grid(row = 3, column = 3)
+
+    buttonDict = {1:a1,2:a2,3:a3,4:a4}
+
+    def start():
+        global qName, qDesc
+        qName = tk.Label(mcWindow, text = questionsDict[1]["q"], font = helv20)
+        qName.grid(row = 2, column = 0, sticky = "w", columnspan = 5)
+        qDesc = tk.Label(mcWindow, text = "Make your choice!",font = helv15)
+        qDesc.grid(row = 1, column = 0, sticky = "w", columnspan = 5)
+        for i in range(1,5):
+            buttonDict[i].config(text = questionsDict[1]["answers"][i])
+
+    title.grid(row = 0, column = 0, columnspan = 4)
+
+    start()
 
 class ToolTip(object):
     # Throws a lot of errors but works fine
@@ -493,6 +556,21 @@ class room():
                 player.loseLife(1)
             cf.wgGame_returnVal = -1
             player.room.initState()
+        elif player.room.puzzle == "mc":
+            multipleChoice()
+            root.wait_window(mcWindow)
+            returnVal = cf.mcGame_returnVal
+            if returnVal == 1:
+                player.room.text = player.room.winText
+                roomText.config(text = player.room.text)
+                player.room.puzzle = "fin"
+            else:
+                interactButton.config(state = "disabled")
+                player.room.text = player.room.loseText
+                roomText.config(text = player.room.text)
+                player.loseLife(1)
+            cf.mcGame_returnVal = -1
+            player.room.initState()
         elif player.room.puzzle == "none":
             player.room.puzzle = "fin"
             roomText.config(text = player.room.winText)
@@ -504,7 +582,7 @@ class room():
 def createRooms():
     # room() takes the puzzle, name of room, text to display when the player enters, text to display when the players loses/wins.
     global startingRoom, hallway1, doorway, kitchen, ballroom, hallway2, bossroom, slide, stairs1, basement, closet, stairs2, cellar, theatre, dining_room, hallway3, kitchen, closet2, hallway4, living_room
-    startingRoom = room("wGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!")
+    startingRoom = room("mc", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!")
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "I would have been worried if you hadn't won that.", "How did you... lose against yourself?")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
     ballroom = room("none", "Ballroom", "Pop quiz! No dancing or music unfortunately.", "Maybe I should have made the questions a bit harder.", "You should brush up on your trivia.")
