@@ -283,8 +283,8 @@ def wineGuesser():
     wgWindow.title("Wine Guesser")
     wgWindow.geometry("500x300")
 
-    titleLabel = tk.Label(wgWindow, text = "Wine Guesser", font = helv25)
-    descLabel = tk.Label(wgWindow, text = "Choose a poi- wine. Be careful now.", font = helv15)
+    #titleLabel = tk.Label(wgWindow, text = "Wine Guesser", font = helv25)
+    #descLabel = tk.Label(wgWindow, text = "Choose a poi- wine. Be careful now.", font = helv15)
 
     # Create wine bottles
     preWine1_img = Image.open("winebottle1.png")
@@ -301,23 +301,29 @@ def multipleChoice():
     global mcWindow, questionNo, correctAnswer
     mcWindow = tk.Toplevel()
     mcWindow.title("Quiz")
-    mcWindow.geometry("500x200")
+    mcWindow.geometry("600x200")
 
     questionNo = 1
     correctAnswer = 0
 
     questionsDict = {1:{"q":"How old am I?", "answers":{1:"I don't know", 2:"INT", 3:"FLOAT", 4:"14"}, "c":4},
-                    2:{"q":"What's my name?","answers":{1:"James",2:"Dolt",3:"Bence",4:"Arthur"},"c":3}}
+                    2:{"q":"What's my name?","answers":{1:"James",2:"Dolt",3:"Bence",4:"Arthur"},"c":3},
+                    3:{"q":"What programming language are Operating Systems coded in?","answers":{1:"C",2:"Python",3:"Scratch",4:"Java"},"c":1},
+                    4:{"q":"What is the lowest level programming language?","answers":{1:"Assembly",2:"Factory",3:"C",4:"JVM"}, "c":1},
+                    5:{"q":"What programming language are websites made in?","answers":{1:"C",2:"Javascript",3:"Java",4:"Python"}, "c":2},
+                    6:{"q":"What programming language is used for data science?","answers":{1:"Javascript",2:"Java",3:"Python",4:"Java"}, "c":3}
+                    }
+
 
     def submit(answer):
         global qName, qDesc, questionNo, correctAnswer
         try:
             if answer == questionsDict[questionNo]["c"]:
-                print("CORRECT")
+                print("Correct!")
                 correctAnswer += 1
                 qDesc.config(text = "Correct!")
             else:
-                print("NOOOO")
+                print("Incorrect!")
                 qDesc.config(text = "Incorrect!")
             questionNo += 1
             qName.config(text = questionsDict[questionNo]["q"])
@@ -326,9 +332,11 @@ def multipleChoice():
         except KeyError:
             qDesc.config(text = "End of Game!")
             qName.config(text = f"You got: {correctAnswer}/{len(questionsDict)}")
+            qDesc.update()
+            qName.update()
             for i in range(1,5):
                 buttonDict[i].config(state = "disabled")
-            time.sleep(1)
+            time.sleep(2)
             if correctAnswer >= len(questionsDict)/2:
                 cf.mcGame_returnVal = 1
             else:
@@ -350,7 +358,8 @@ def multipleChoice():
 
     def start():
         global qName, qDesc
-        qName = tk.Label(mcWindow, text = questionsDict[1]["q"], font = helv20)
+
+        qName = tk.Label(mcWindow, text = questionsDict[1]["q"], font = helv15)
         qName.grid(row = 2, column = 0, sticky = "w", columnspan = 5)
         qDesc = tk.Label(mcWindow, text = "Make your choice!",font = helv15)
         qDesc.grid(row = 1, column = 0, sticky = "w", columnspan = 5)
