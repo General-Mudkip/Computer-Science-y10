@@ -303,7 +303,7 @@ def multipleChoice():
     mcWindow.title("Quiz")
     mcWindow.geometry("600x200")
 
-    questionNo = 1
+    questionNo = 0
     correctAnswer = 0
 
     questionsDict = {1:{"q":"How old am I?", "answers":{1:"I don't know", 2:"INT", 3:"FLOAT", 4:"14"}, "c":4},
@@ -318,7 +318,7 @@ def multipleChoice():
     def submit(answer):
         global qName, qDesc, questionNo, correctAnswer
         try:
-            if answer == questionsDict[questionNo]["c"]:
+            if answer == questionsDict[qList[questionNo]]["c"]:
                 print("Correct!")
                 correctAnswer += 1
                 qDesc.config(text = "Correct!")
@@ -326,12 +326,25 @@ def multipleChoice():
                 print("Incorrect!")
                 qDesc.config(text = "Incorrect!")
             questionNo += 1
-            qName.config(text = questionsDict[questionNo]["q"])
+            qName.config(text = questionsDict[qList[questionNo]]["q"])
             for i in range(1,5):
-                buttonDict[i].config(text = questionsDict[questionNo]["answers"][i])
+                buttonDict[i].config(text = questionsDict[qList[questionNo]]["answers"][i])
         except KeyError:
             qDesc.config(text = "End of Game!")
-            qName.config(text = f"You got: {correctAnswer}/{len(questionsDict)}")
+            qName.config(text = f"You got: {correctAnswer}/{len(qList)}")
+            qDesc.update()
+            qName.update()
+            for i in range(1,5):
+                buttonDict[i].config(state = "disabled")
+            time.sleep(2)
+            if correctAnswer >= len(questionsDict)/2:
+                cf.mcGame_returnVal = 1
+            else:
+                cf.mcGame_returnVal = 0
+            mcWindow.destroy()
+        except IndexError:
+            qDesc.config(text = "End of Game!")
+            qName.config(text = f"You got: {correctAnswer}/{len(qList)}")
             qDesc.update()
             qName.update()
             for i in range(1,5):
@@ -343,6 +356,7 @@ def multipleChoice():
                 cf.mcGame_returnVal = 0
             mcWindow.destroy()
 
+
     title = tk.Label(mcWindow, text = "Multiple Choice Quiz", font = helv25)
     a1 = tk.Button(mcWindow, font = helv10, command = lambda: submit(1))
     a2 = tk.Button(mcWindow, font = helv10, command = lambda: submit(2))
@@ -353,18 +367,21 @@ def multipleChoice():
     a2.grid(row = 3, column = 1)
     a3.grid(row = 3, column = 2)
     a4.grid(row = 3, column = 3)
-
     buttonDict = {1:a1,2:a2,3:a3,4:a4}
 
     def start():
-        global qName, qDesc
-
-        qName = tk.Label(mcWindow, text = questionsDict[1]["q"], font = helv15)
+        global qName, qDesc, qList
+        qList = list(range(1,len(questionsDict)+1))
+        for i in range(3):
+            popNo = random.randint(0,len(qList)-1)
+            print(f"Pop: {popNo} || Length: {len(qList)} || List: {qList}")
+            qList.pop(popNo)
+        qName = tk.Label(mcWindow, text = questionsDict[qList[0]]["q"], font = helv15)
         qName.grid(row = 2, column = 0, sticky = "w", columnspan = 5)
         qDesc = tk.Label(mcWindow, text = "Make your choice!",font = helv15)
         qDesc.grid(row = 1, column = 0, sticky = "w", columnspan = 5)
         for i in range(1,5):
-            buttonDict[i].config(text = questionsDict[1]["answers"][i])
+            buttonDict[i].config(text = questionsDict[qList[0]]["answers"][i])
 
     title.grid(row = 0, column = 0, columnspan = 4)
 
