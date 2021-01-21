@@ -278,27 +278,56 @@ def displayEnd(ending, endingNo):
     restartButton.grid(row = 3, column= 0, sticky = "w")
 
 def wineGuesser():
-    global wgWindow
+    # Python garbage collector goes ahead and gets rid of the image variables if they are local for whatever reason
+    global wgWindow, wine1_img, wine2_img, wine3_img
     wgWindow = tk.Toplevel()
     wgWindow.title("Wine Guesser")
     wgWindow.geometry("500x300")
 
-    #titleLabel = tk.Label(wgWindow, text = "Wine Guesser", font = helv25)
-    #descLabel = tk.Label(wgWindow, text = "Choose a poi- wine. Be careful now.", font = helv15)
+    def submit(choice):
+        if choice == random.randint(1,3):
+            descLabel.config(text = "You died! Ahhh.")
+            descLabel.update()
+            time.sleep(2)
+            wgWindow.destroy()
+            cf.wgGame_returnVal = 0
+        else:
+            descLabel.config(text = "You chose the wine. Nice job!")
+            descLabel.update()
+            time.sleep(2)
+            wgWindow.destroy()
+            cf.wgGame_returnVal = 1
+
+    titleLabel = tk.Label(wgWindow, text = "Wine Guesser", font = helv25)
+    descLabel = tk.Label(wgWindow, text = "Choose a poi- wine. Be careful now.", font = helv15)
 
     # Create wine bottles
     preWine1_img = Image.open("winebottle1.png")
-    preWine1_img = preWine1_img.resize((60, 60))
+    preWine1_img = preWine1_img.resize((60, 90), Image.ANTIALIAS)
     wine1_img = ImageTk.PhotoImage(preWine1_img)
 
-    # Creates image lables
-    wine1 = tk.Label(wgWindow, image = wine1_img)
-    #titleLabel.grid(row = 0, column = 0, sticky = "w", columnspan = 2)
-    #descLabel.grid(row = 1, column = 0, sticky = "w", columnspan = 2)
-    wine1.grid(row = 1, column = 0)
+    preWine2_img = Image.open("winebottle2.png")
+    preWine2_img = preWine2_img.resize((60, 90), Image.ANTIALIAS)
+    wine2_img = ImageTk.PhotoImage(preWine2_img)
+
+    preWine3_img = Image.open("winebottle3.png")
+    preWine3_img = preWine3_img.resize((60, 90), Image.ANTIALIAS)
+    wine3_img = ImageTk.PhotoImage(preWine3_img)
+
+    # Creates image labels
+    wine1 = tk.Button(wgWindow, image = wine1_img, command = lambda: submit(1))
+    wine2 = tk.Button(wgWindow, image = wine2_img, command = lambda: submit(2))
+    wine3 = tk.Button(wgWindow, image = wine3_img, command = lambda: submit(3))
+
+    titleLabel.grid(row = 0, column = 0, sticky = "w", columnspan = 3)
+    descLabel.grid(row = 1, column = 0, sticky = "w", columnspan = 3)
+    wine1.grid(row = 2, column = 0)
+    wine2.grid(row = 2, column = 1)
+    wine3.grid(row = 2, column = 2)
 
 def multipleChoice():
     global mcWindow, questionNo, correctAnswer
+    # Sets up the window
     mcWindow = tk.Toplevel()
     mcWindow.title("Quiz")
     mcWindow.geometry("600x200")
@@ -306,6 +335,7 @@ def multipleChoice():
     questionNo = 0
     correctAnswer = 0
 
+    # Dictionary to store the questions (q), answers (answers), and correct answer number (c).
     questionsDict = {1:{"q":"How old am I?", "answers":{1:"I don't know", 2:"INT", 3:"FLOAT", 4:"14"}, "c":4},
                     2:{"q":"What's my name?","answers":{1:"James",2:"Dolt",3:"Bence",4:"Arthur"},"c":3},
                     3:{"q":"What programming language are Operating Systems coded in?","answers":{1:"C",2:"Python",3:"Scratch",4:"Java"},"c":1},
@@ -314,7 +344,7 @@ def multipleChoice():
                     6:{"q":"What programming language is used for data science?","answers":{1:"Javascript",2:"Java",3:"Python",4:"Java"}, "c":3}
                     }
 
-
+    # Read start() first, most variables are initialized there
     def submit(answer):
         global qName, qDesc, questionNo, correctAnswer
         try:
@@ -608,7 +638,7 @@ class room():
 def createRooms():
     # room() takes the puzzle, name of room, text to display when the player enters, text to display when the players loses/wins.
     global startingRoom, hallway1, doorway, kitchen, ballroom, hallway2, bossroom, slide, stairs1, basement, closet, stairs2, cellar, theatre, dining_room, hallway3, kitchen, closet2, hallway4, living_room
-    startingRoom = room("mc", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!")
+    startingRoom = room("wGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!")
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "I would have been worried if you hadn't won that.", "How did you... lose against yourself?")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
     ballroom = room("none", "Ballroom", "Pop quiz! No dancing or music unfortunately.", "Maybe I should have made the questions a bit harder.", "You should brush up on your trivia.")
