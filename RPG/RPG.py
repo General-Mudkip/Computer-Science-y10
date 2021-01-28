@@ -222,11 +222,24 @@ def codeEnter(code):
             cf.ceGame_returnVal = "correct"
             ceWindow.destroy()
         else:
-            display.delete(0, tk.END)
-            display.insert(0, "Incorrect!")
-            display.update()
-            time.sleep(2)
-            display.delete(0, tk.END)
+            if len(answer) == 4:
+                display.delete(0, tk.END)
+                display.insert(0, "Incorrect!")
+                display.update()
+                time.sleep(2)
+                display.delete(0, tk.END)
+            elif len(answer) < 4:
+                display.delete(0, tk.END)
+                display.insert(0, "Too short!")
+                display.update()
+                time.sleep(2)
+                display.delete(0, tk.END)
+            elif len(answer) > 5:
+                display.delete(0, tk.END)
+                display.insert(0, "Too long!")
+                display.update()
+                time.sleep(2)
+                display.delete(0, tk.END)
 
     text = tk.Label(ceWindow, text = "Enter The Code.")
     button_1 = tk.Button(ceWindow, text = "1", padx = 30, pady = 20, command = lambda: button_click(1))
@@ -401,8 +414,8 @@ def multipleChoice():
 
     def start():
         global qName, qDesc, qList
-        qList = list(range(1,len(questionsDict)+1))
-        for i in range(3):
+        qList = list(range(1,len(questionsDict)+1)) # Creates a list from 1 - to the length of the list
+        for i in range(len(qList)-3): # Pops all values except for three.
             popNo = random.randint(0,len(qList)-1)
             print(f"Pop: {popNo} || Length: {len(qList)} || List: {qList}")
             qList.pop(popNo)
@@ -589,7 +602,7 @@ class room():
             cf.tttGame_returnVal = 0
             player.room.initState()
         elif player.room.puzzle == "code":
-            codeEnter("64835")
+            codeEnter("1234")
             root.wait_window(ceWindow)
             returnVal = cf.ceGame_returnVal
             if returnVal == "correct":
@@ -638,7 +651,7 @@ class room():
 def createRooms():
     # room() takes the puzzle, name of room, text to display when the player enters, text to display when the players loses/wins.
     global startingRoom, hallway1, doorway, kitchen, ballroom, hallway2, bossroom, slide, stairs1, basement, closet, stairs2, cellar, theatre, dining_room, hallway3, kitchen, closet2, hallway4, living_room
-    startingRoom = room("wGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!")
+    startingRoom = room("code", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!")
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "I would have been worried if you hadn't won that.", "How did you... lose against yourself?")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
     ballroom = room("none", "Ballroom", "Pop quiz! No dancing or music unfortunately.", "Maybe I should have made the questions a bit harder.", "You should brush up on your trivia.")
