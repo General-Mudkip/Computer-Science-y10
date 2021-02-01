@@ -658,6 +658,10 @@ class room():
                 player.loseLife(1)
             cf.mcGame_returnVal = -1
             player.room.initState()
+        elif player.room.puzzle == "fin":
+            winScene()
+            root.wait_window(fWindow)
+            root.destroy()
         elif player.room.puzzle == "none":
             player.room.puzzle = "fin"
             roomText.config(text = player.room.winText)
