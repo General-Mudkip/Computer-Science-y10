@@ -213,6 +213,7 @@ def codeEnter(code):
         display.insert(0, newText)
 
     def submit():
+        print(code)
         answer = display.get()
         if answer == "":
             display.delete(0, tk.END)
@@ -437,6 +438,54 @@ def multipleChoice():
 
     start()
 
+def doorGuesser():
+    # Python garbage collector goes ahead and gets rid of the image variables if they are local for whatever reason
+    global dgWindow, door1_img, door2_img, door3_img
+    dgWindow = tk.Toplevel()
+    dgWindow.title("Door Guesser")
+    dgWindow.geometry("500x300")
+
+    def submit(choice):
+        if choice in [1,3]:
+            descLabel.config(text = "Wrong door! Try again.")
+            descLabel.update()
+            time.sleep(2)
+            dgWindow.destroy()
+            cf.dgGame_returnVal = 0
+        else:
+            descLabel.config(text = "You chose the right door. Nice job!")
+            descLabel.update()
+            time.sleep(2)
+            dgWindow.destroy()
+            cf.dgGame_returnVal = 1
+
+    titleLabel = tk.Label(dgWindow, text = "Door Guesser", font = helv25)
+    descLabel = tk.Label(dgWindow, text = "Choose the right door. May or may not lead to death.", font = helv15)
+
+    # Create doors
+    preDoor1_img = Image.open("door1.png")
+    preDoor1_img = preDoor1_img.resize((60, 90), Image.ANTIALIAS)
+    door1_img = ImageTk.PhotoImage(preDoor1_img)
+
+    preDoor2_img = Image.open("door2.jpg")
+    preDoor2_img = preDoor2_img.resize((60, 90), Image.ANTIALIAS)
+    door2_img = ImageTk.PhotoImage(preDoor2_img)
+
+    preDoor3_img = Image.open("door3.png")
+    preDoor3_img = preDoor3_img.resize((60, 90), Image.ANTIALIAS)
+    door3_img = ImageTk.PhotoImage(preDoor3_img)
+
+    # Creates image labels
+    door1 = tk.Button(dgWindow, image = door1_img, command = lambda: submit(1))
+    door2 = tk.Button(dgWindow, image = door2_img, command = lambda: submit(2))
+    door3 = tk.Button(dgWindow, image = door3_img, command = lambda: submit(3))
+
+    titleLabel.grid(row = 0, column = 0, sticky = "w", columnspan = 3)
+    descLabel.grid(row = 1, column = 0, sticky = "w", columnspan = 3)
+    door1.grid(row = 2, column = 0)
+    door2.grid(row = 2, column = 1)
+    door3.grid(row = 2, column = 2)
+
 def winScene():
     global fWindow
     fWindow = tk.Toplevel()
@@ -627,7 +676,7 @@ class room():
             cf.tttGame_returnVal = 0
             player.room.initState()
         elif player.room.puzzle == "code":
-            codeEnter("1234")
+            codeEnter(player.room.code)
             root.wait_window(ceWindow)
             returnVal = cf.ceGame_returnVal
             if returnVal == "correct":
@@ -665,10 +714,25 @@ class room():
                 player.loseLife(1)
             cf.mcGame_returnVal = -1
             player.room.initState()
-        elif player.room.puzzle == "fin":
+        elif player.room.puzzle == "end":
             winScene()
             root.wait_window(fWindow)
             root.destroy()
+        elif player.room.puzzle == "door":
+            doorGuesser()
+            root.wait_window(dgWindow)
+            returnVal = cf.dgGame_returnVal
+            if returnVal == 1:
+                player.room.text = player.room.winText
+                roomText.config(text = player.room.text)
+                player.room.puzzle = "fin"
+            else:
+                interactButton.config(state = "disabled")
+                player.room.text = player.room.loseText
+                roomText.config(text = player.room.text)
+                player.loseLife(1)
+            cf.dgGame_returnVal = -1
+            player.room.initState()           
         elif player.room.puzzle == "none":
             player.room.puzzle = "fin"
             roomText.config(text = player.room.winText)
@@ -680,14 +744,14 @@ class room():
 def createRooms():
     # room() takes the puzzle, name of room, text to display when the player enters, text to display when the players loses/wins.
     global startingRoom, hallway1, doorway, kitchen, ballroom, hallway2, bossroom, slide, stairs1, basement, closet, stairs2, cellar, theatre, dining_room, hallway3, kitchen, closet2, hallway4, living_room
-    startingRoom = room("code", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!")
+    startingRoom = room("door", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!", "1976")
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "I would have been worried if you hadn't won that.", "How did you... lose against yourself?")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
-    ballroom = room("none", "Ballroom", "Pop quiz! No dancing or music unfortunately.", "Maybe I should have made the questions a bit harder.", "You should brush up on your trivia.")
-    hallway2 = room("code", "Hallway", "You here a faint hum ahead. Spooky.", "There's no turning back once you go forward.", "Go and explore more. Open up the endings screen to see what you have so far.", 1976)
-    bossroom = room("fin", "The Exit", "Damn you!", "Begone fool...", "Muahahaha! Try again.")
+    ballroom = room("mc", "Ballroom", "Pop quiz! No dancing or music unfortunately.", "Maybe I should have made the questions a bit harder.", "You should brush up on your trivia.")
+    hallway2 = room("code", "Hallway", "You here a faint hum ahead. Spooky.", "There's no turning back once you go forward.", "Go and explore more. Open up the endings screen to see what you have so far.", "1976")
+    bossroom = room("end", "The Exit", "Damn you!", "Begone fool...", "Muahahaha! Try again.")
     slide = room("none", "Slide!", "Down you go!", "N/A", "N/A")
-    stairs1 = room("none", "Basement Stairs", "The stairs lead down to a very dark room.", "I should stop using these number guessing games.", " Get good.")
+    stairs1 = room("gGame", "Basement Stairs", "The stairs lead down to a very dark room.", "I should stop using these number guessing games.", " Get good.")
     basement = room("none", "Basement", "Ahhhh! I'm joking. Why would I get scared in my own house?", "Well, you've still got a ways to go.", "Hahahahaha.")
     closet = room(2, "Closet", "Just hide and everything will be alright.", "N/A", "N/A")
     stairs2 = room("none", "Deeper Stairs", "These lead deeper down...", "Good luck in the next room. Hehehe...", "Come on. You just have to pick a door.")
