@@ -486,6 +486,29 @@ def doorGuesser():
     door2.grid(row = 2, column = 1)
     door3.grid(row = 2, column = 2)
 
+def keyGet():
+    global kgWindow, key_img
+    kgWindow = tk.Toplevel()
+    kgWindow.title("Item get!")
+    kgWindow.geometry("300x220")
+
+    title = tk.Label(kgWindow, text = "Item Get!", font = helv25)
+    subText = tk.Label(kgWindow, text = "You picked up a key!", font = helv20)
+    exitButton = tk.Button(kgWindow, text = "Exit", font = helv15, command = kgWindow.destroy)
+
+    preKey_img = Image.open("key.png")
+    preKey_img = preKey_img.resize((150, 90), Image.ANTIALIAS)
+    key_img = ImageTk.PhotoImage(preKey_img)
+
+    keyLabel = tk.Label(kgWindow, image = key_img)
+
+    title.grid(row = 0, column = 0, sticky = "w")
+    subText.grid(row = 1, column = 0, sticky = "w")
+    keyLabel.grid(row = 2, column = 0, sticky = "w")
+    exitButton.grid(row = 3, column = 0, sticky = "w")
+
+    player.keyGot = 1
+
 def winScene():
     global fWindow
     fWindow = tk.Toplevel()
@@ -550,6 +573,7 @@ class playerState():
                         4:{"name":"Tasty!","unlocked":False, "text":"Too much food...","room":"Food Closet","c":"6"}
                     }
         self.code = ["-","-","-","-"]
+        self.keyGot = 0
 
     def loseLife(self, lost):
         self.heartDict[self.lives].config(image = emptyHeart_img)
@@ -727,6 +751,8 @@ class room():
             if returnVal == 1:
                 player.room.text = player.room.winText
                 roomText.config(text = player.room.text)
+                keyGet()
+                root.wait_window(kgWindow)
                 player.room.puzzle = "fin"
             else:
                 interactButton.config(state = "disabled")
@@ -746,7 +772,7 @@ class room():
 def createRooms():
     # room() takes the puzzle, name of room, text to display when the player enters, text to display when the players loses/wins.
     global startingRoom, hallway1, doorway, kitchen, ballroom, hallway2, bossroom, slide, stairs1, basement, closet, stairs2, cellar, theatre, dining_room, hallway3, kitchen, closet2, hallway4, living_room
-    startingRoom = room("end", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!", "1976")
+    startingRoom = room("door", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!", "1976")
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "I would have been worried if you hadn't won that.", "How did you... lose against yourself?")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
     ballroom = room("mc", "Ballroom", "Pop quiz! No dancing or music unfortunately.", "Maybe I should have made the questions a bit harder.", "You should brush up on your trivia.")
@@ -756,15 +782,15 @@ def createRooms():
     stairs1 = room("gGame", "Basement Stairs", "The stairs lead down to a very dark room.", "I should stop using these number guessing games.", " Get good.")
     basement = room("none", "Basement", "Ahhhh! I'm joking. Why would I get scared in my own house?", "Well, you've still got a ways to go.", "Hahahahaha.")
     closet = room(2, "Closet", "Just hide and everything will be alright.", "N/A", "N/A")
-    stairs2 = room("none", "Deeper Stairs", "These lead deeper down...", "Good luck in the next room. Hehehe...", "Come on. You just have to pick a door.")
-    cellar = room("none", "Wine Cellar", "Ah, a proud collection. Don't touch anything!", "That was expensive...", "Serves you right!")
+    stairs2 = room("door", "Deeper Stairs", "These lead deeper down...", "Good luck in the next room. Hehehe...", "Come on. You just have to pick a door.")
+    cellar = room("wGame", "Wine Cellar", "Ah, a proud collection. Don't touch anything!", "That was expensive...", "Serves you right!")
     theatre = room(3, "Theatre", "Sometimes it's nice to relax with some popcorn and watch a movie.", "N/A", "N/A")
-    dining_room = room("none", "Dining Room", "Good luck finding your way through this maze of tables.", "Well. I've got to commend you on that.", "If you stick to the right it might work.")
+    dining_room = room("none", "Dining Room", "Good luck finding your way through this maze of tables.", "What do you mean it was just a restaurant?.", "If you stick to the right it might work.")
     hallway3 = room("ttt", "Hallway", "Maybe this will stump you.", "Well, congrats. You've done the bare minimum.", "How...?")
-    kitchen = room("none", "Kitchen", "Let's test your cooking skills.", "A fellow food enthusiast I see.", "How many times have you cooked in your life?")
+    kitchen = room("none", "Kitchen", "Let's test your cooking skills.", "Ah... I may have forgotten to lay out the food. Forget this.", "How many times have you cooked in your life?")
     closet2 = room(4, "Food Closet", "Eat your problems away.", "N/A", "N/A")
-    hallway4 = room("none", "Hallway", "I sure hope you were brought up right.", "Obviously not.", "Your parents raised you well.")
-    living_room = room("none", "Living Room", "Let's watch some TV and relax.", "Nice job changing the channels.","Have you never used a remote in your life?")
+    hallway4 = room("none", "Hallway", "Good luck picking this!", "Darn it. I paid a lot for that lock.", "Your parents raised you well.")
+    living_room = room("none", "Living Room", "Let's watch some TV and relax.", "Do you mind getting some food?","Have you never used a remote in your life?")
 
 def createNeighbours():
     global startingRoom, hallway1, doorway, kitchen
