@@ -214,32 +214,39 @@ def codeEnter(code):
 
     def submit():
         answer = display.get()
-        if answer == code:
+        if answer == "":
             display.delete(0, tk.END)
-            display.insert(0, "Correct!")
+            display.insert(0, "Enter a code!")
             display.update()
             time.sleep(2)
-            cf.ceGame_returnVal = "correct"
-            ceWindow.destroy()
+            display.delete(0, tk.END)
         else:
-            if len(answer) == 4:
+            if answer == code:
                 display.delete(0, tk.END)
-                display.insert(0, "Incorrect!")
+                display.insert(0, "Correct!")
                 display.update()
                 time.sleep(2)
-                display.delete(0, tk.END)
-            elif len(answer) < 4:
-                display.delete(0, tk.END)
-                display.insert(0, "Too short!")
-                display.update()
-                time.sleep(2)
-                display.delete(0, tk.END)
-            elif len(answer) > 5:
-                display.delete(0, tk.END)
-                display.insert(0, "Too long!")
-                display.update()
-                time.sleep(2)
-                display.delete(0, tk.END)
+                cf.ceGame_returnVal = "correct"
+                ceWindow.destroy()
+            else:
+                if len(answer) == 4:
+                    display.delete(0, tk.END)
+                    display.insert(0, "Incorrect!")
+                    display.update()
+                    time.sleep(2)
+                    display.delete(0, tk.END)
+                elif len(answer) < 4:
+                    display.delete(0, tk.END)
+                    display.insert(0, "Too short!")
+                    display.update()
+                    time.sleep(2)
+                    display.delete(0, tk.END)
+                elif len(answer) > 5:
+                    display.delete(0, tk.END)
+                    display.insert(0, "Too long!")
+                    display.update()
+                    time.sleep(2)
+                    display.delete(0, tk.END)
 
     text = tk.Label(ceWindow, text = "Enter The Code.")
     button_1 = tk.Button(ceWindow, text = "1", padx = 30, pady = 20, command = lambda: button_click(1))
