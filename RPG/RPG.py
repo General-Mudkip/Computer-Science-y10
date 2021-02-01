@@ -509,6 +509,34 @@ def keyGet():
 
     player.keyGot = 1
 
+def lock():
+    global lWindow, lock_img
+
+    lWindow = tk.Toplevel()
+    lWindow.title("Lock")
+    lWindow.geometry("300x300")
+
+    def unlock():
+        if player.keyGot == 1:
+            cf.lGame_returnVal = 1
+            lWindow.destroy()
+        else:
+            subText.config(text = "You don't seem to have the key!")
+            subText.update()
+
+    title = tk.Label(lWindow, text = "Lock!", font = helv25)
+    subText = tk.Label(lWindow, text = "Hmm... do you have a key?", font = helv15)
+
+    preLock_img = Image.open("lock.png")
+    preLock_img = preLock_img.resize((150, 150), Image.ANTIALIAS)
+    lock_img = ImageTk.PhotoImage(preLock_img)   
+
+    lockImg = tk.Button(lWindow, image = lock_img, command = unlock)
+
+    title.grid(row = 0, column = 0, sticky = "w")
+    subText.grid(row = 1, column = 0, sticky = "w")
+    lockImg.grid(row = 2, column = 0, sticky = "w") 
+
 def winScene():
     global fWindow
     fWindow = tk.Toplevel()
@@ -760,7 +788,20 @@ class room():
                 roomText.config(text = player.room.text)
                 player.loseLife(1)
             cf.dgGame_returnVal = -1
-            player.room.initState()           
+            player.room.initState()   
+        elif player.room.puzzle == "lock":
+            lock()
+            root.wait_window(lWindow)
+            returnVal = cf.lGame_returnVal
+            if returnVal == 1:
+                player.room.text = player.room.winText
+                roomText.config(text = player.room.text)
+                player.room.puzzle = "fin"
+            else:
+                interactButton.config(state = "disabled")
+                player.room.text = player.room.loseText
+                roomText.config(text = player.room.text)
+            player.room.initState()
         elif player.room.puzzle == "none":
             player.room.puzzle = "fin"
             roomText.config(text = player.room.winText)
@@ -772,7 +813,7 @@ class room():
 def createRooms():
     # room() takes the puzzle, name of room, text to display when the player enters, text to display when the players loses/wins.
     global startingRoom, hallway1, doorway, kitchen, ballroom, hallway2, bossroom, slide, stairs1, basement, closet, stairs2, cellar, theatre, dining_room, hallway3, kitchen, closet2, hallway4, living_room
-    startingRoom = room("door", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!", "1976")
+    startingRoom = room("gGame", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!", "1976")
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "I would have been worried if you hadn't won that.", "How did you... lose against yourself?")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
     ballroom = room("mc", "Ballroom", "Pop quiz! No dancing or music unfortunately.", "Maybe I should have made the questions a bit harder.", "You should brush up on your trivia.")
@@ -789,7 +830,7 @@ def createRooms():
     hallway3 = room("ttt", "Hallway", "Maybe this will stump you.", "Well, congrats. You've done the bare minimum.", "How...?")
     kitchen = room("none", "Kitchen", "Let's test your cooking skills.", "Ah... I may have forgotten to lay out the food. Forget this.", "How many times have you cooked in your life?")
     closet2 = room(4, "Food Closet", "Eat your problems away.", "N/A", "N/A")
-    hallway4 = room("none", "Hallway", "Good luck picking this!", "Darn it. I paid a lot for that lock.", "Your parents raised you well.")
+    hallway4 = room("lock", "Hallway", "Good luck picking this!", "Darn it. I paid a lot for that lock.", "Hahah! Wait... where did I put that key?")
     living_room = room("none", "Living Room", "Let's watch some TV and relax.", "Do you mind getting some food?","Have you never used a remote in your life?")
 
 def createNeighbours():
