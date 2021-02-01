@@ -490,15 +490,17 @@ def winScene():
     global fWindow
     fWindow = tk.Toplevel()
     fWindow.title("The End")
-    fWindow.geometry("300x200")
+    fWindow.geometry("400x200")
 
-    titleLabel = tk.Label(fWindow, text = "The End.", font = helv25)
+    titleLabel = tk.Label(fWindow, text = "The End.", font = helv35)
     subText = tk.Label(fWindow, text = "Congratulations on finishing the game!", font = helv20)
     author = tk.Label(fWindow, text = "'RPG' by Bence Redmond")
+    exitButton = tk.Button(fWindow, text = "Exit", font = helv20, command = fWindow.destroy)
 
-    titleLabel.grid(row = 0, columnn = 0, sticky = "w")
-    subText.grid(row = 1, columnn = 0, sticky = "w")
-    author.grid(row = 2, columnn = 0, sticky = "w")
+    titleLabel.grid(row = 0, column = 0, sticky = "w")
+    subText.grid(row = 2, column = 0, sticky = "w")
+    author.grid(row = 1, column = 0, sticky = "w")
+    exitButton.grid(row = 3, column = 0, sticky = "w")
 
 class ToolTip(object):
     # Throws a lot of errors but works fine
@@ -744,7 +746,7 @@ class room():
 def createRooms():
     # room() takes the puzzle, name of room, text to display when the player enters, text to display when the players loses/wins.
     global startingRoom, hallway1, doorway, kitchen, ballroom, hallway2, bossroom, slide, stairs1, basement, closet, stairs2, cellar, theatre, dining_room, hallway3, kitchen, closet2, hallway4, living_room
-    startingRoom = room("door", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!", "1976")
+    startingRoom = room("end", "Entrance", "Ho ho ho... welcome to my house of Death!", "Hmm, maybe that was a bit too easy.", "Well that was a good effort... down one life!", "1976")
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "I would have been worried if you hadn't won that.", "How did you... lose against yourself?")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
     ballroom = room("mc", "Ballroom", "Pop quiz! No dancing or music unfortunately.", "Maybe I should have made the questions a bit harder.", "You should brush up on your trivia.")
