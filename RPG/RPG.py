@@ -430,6 +430,20 @@ def multipleChoice():
 
     start()
 
+def winScene():
+    global fWindow
+    fWindow = tk.Toplevel()
+    fWindow.title("The End")
+    fWindow.geometry("300x200")
+
+    titleLabel = tk.Label(fWindow, text = "The End.", font = helv25)
+    subText = tk.Label(fWindow, text = "Congratulations on finishing the game!", font = helv20)
+    author = tk.Label(fWindow, text = "'RPG' by Bence Redmond")
+
+    titleLabel.grid(row = 0, columnn = 0, sticky = "w")
+    subText.grid(row = 1, columnn = 0, sticky = "w")
+    author.grid(row = 2, columnn = 0, sticky = "w")
+
 class ToolTip(object):
     # Throws a lot of errors but works fine
     def __init__(self, widget, text):
@@ -471,12 +485,13 @@ class playerState():
         self.lives = lives
         self.unlockedEndings = 0 
         # Dictionary to store different end conditions
-        self.endDict = {0:{"name":"Death", "unlocked":False, "text":"Expected to be honest.", "room":"N/A"},
-                        1:{"name":"Awkward...","unlocked":False, "text":"Well, you weren't supposed to do that.", "room":"Doorway"},
-                        2:{"name":"Scaredy Cat","unlocked":False, "text":"Hide from your fears.", "room":"Closet"},
-                        3:{"name":"Relaxation Time","unlocked":False,"text":"Sometimes you just need to sit back and relax.","room":"Theatre"},
-                        4:{"name":"Tasty!","unlocked":False, "text":"Too much food...","room":"Food Closet"}
-        }
+        self.endDict = {0:{"name":"Death", "unlocked":False, "text":"Expected to be honest.", "room":"N/A", "c":"None!"},
+                        1:{"name":"Awkward...","unlocked":False, "text":"Well, you weren't supposed to do that.", "room":"Doorway", "c":"1"},
+                        2:{"name":"Scaredy Cat","unlocked":False, "text":"Hide from your fears.", "room":"Closet", "c":"9"},
+                        3:{"name":"Relaxation Time","unlocked":False,"text":"Sometimes you just need to sit back and relax.","room":"Theatre", "c":"7"},
+                        4:{"name":"Tasty!","unlocked":False, "text":"Too much food...","room":"Food Closet","c":"6"}
+                    }
+        self.code = ["-","-","-","-"]
 
     def loseLife(self, lost):
         self.heartDict[self.lives].config(image = emptyHeart_img)
@@ -504,15 +519,18 @@ class playerState():
         if self.endDict[ending]["unlocked"] != True:
             self.unlockedEndings += 1
         self.endDict[ending].update({"unlocked":True})
+        if ending - 1 >= 0:
+            self.code[ending-1] = self.endDict[ending]["c"]
 
 # Class used to create the rooms
 class room():
-    def __init__(self, puzzle, name, text, winText, loseText):
+    def __init__(self, puzzle, name, text, winText, loseText, code = 0):
         self.name = name
         self.puzzle = puzzle
         self.text = text # Text to display when the player enters a room
         self.loseText = loseText
         self.winText = winText
+        self.code = code
 
     def assignNeighbours(self, left, right, up, down):
         # Stores the information about the room's neighbours, and the button object that leads to that room
@@ -655,8 +673,8 @@ def createRooms():
     hallway1 = room("ttt", "Hallway", "You see a whiteboard on the wall, with a Tic Tac Toe board. Let's play!", "I would have been worried if you hadn't won that.", "How did you... lose against yourself?")
     doorway = room(1, "Doorway", "Well, I guess you win?", "N/A", "N/A")
     ballroom = room("none", "Ballroom", "Pop quiz! No dancing or music unfortunately.", "Maybe I should have made the questions a bit harder.", "You should brush up on your trivia.")
-    hallway2 = room("code", "Hallway", "You here a faint hum ahead. Spooky.", "There's no turning back once you go forward.", "Go and explore more. Open up the endings screen to see what you have so far.")
-    bossroom = room("none", "Boss Room", "Prepare to die fool!", "Ouch.", "Muahahaha! Try again.")
+    hallway2 = room("code", "Hallway", "You here a faint hum ahead. Spooky.", "There's no turning back once you go forward.", "Go and explore more. Open up the endings screen to see what you have so far.", 1976)
+    bossroom = room("fin", "The Exit", "Damn you!", "Begone fool...", "Muahahaha! Try again.")
     slide = room("none", "Slide!", "Down you go!", "N/A", "N/A")
     stairs1 = room("none", "Basement Stairs", "The stairs lead down to a very dark room.", "I should stop using these number guessing games.", " Get good.")
     basement = room("none", "Basement", "Ahhhh! I'm joking. Why would I get scared in my own house?", "Well, you've still got a ways to go.", "Hahahahaha.")
@@ -707,9 +725,12 @@ def endingsScreen(endings):
     endingsWin.title("Your Unlocked Endings")
     endingsWin.geometry("650x500")
 
-    endingsTitle = tk.Label(endingsWin, font = helv35, text = f"All Endings || {player.unlockedEndings}/{len(endings)} Unlocked\n---------------------------------------")
+    codeText = "".join(player.code)
 
-    row = 1
+    endingsTitle = tk.Label(endingsWin, font = helv35, text = f"All Endings || {player.unlockedEndings}/{len(endings)} Unlocked")
+    codeLabel = tk.Label(endingsWin, font = helv25, text = f"Code: {codeText}\n---------------------------------------")
+
+    row = 2
     # Used to iterate through the ending dictionary, and display each value there
     # This system doesn't require me to come back and edit when I need to add new endings
     for i in range(0,len(endings)):
@@ -721,6 +742,7 @@ def endingsScreen(endings):
         row += 2
 
     endingsTitle.grid(row = 0, column = 0, columnspan = 2, sticky = "w")
+    codeLabel.grid(row = 1, column = 0, columnspan = 2, sticky = "w")
     root.wait_window(endingsWin) # Waits until the player closes the ending screen
     endingsButton.config(state = "active")
 
