@@ -14,4 +14,13 @@ helv20 = tkFont.Font(family = "Helvetica", size = 17)
 helv25 = tkFont.Font(family = "Helvetica", size = 25)
 helv35 = tkFont.Font(family = "Helvetica", size = 35)
 
+# Initializes labels
+
+titleLabel = tk.Label(hm_window, text = "Hangman", font = helv25)
+subTitle = tk.Label(hm_window, text = "Setting up game...", font = helv15)
+
+# Displays all elements
+titleLabel.grid(row = 0, column = 0, sticky = "w")
+subTitle.grid(row = 1, column = 0, sticky = "w")
+
 hm_window.mainloop()
