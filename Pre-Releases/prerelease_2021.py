@@ -4,7 +4,7 @@ def candidatesPrint(candidate_dict):
             print(f" - {i}")
 
 def tutorEntry():
-    global student_total, candidate_dict, candidates_total
+    global student_total, candidate_dictionary, candidates_total
 
     group_name = 0
     while group_name == 0:
@@ -31,7 +31,7 @@ def tutorEntry():
     while student_total == 0:
         try:
             student_total = int(input("How many students are in your tutor group?\n"))
-            if student_total not in range(28,36):
+            if student_total not in range(2,36):
                 print("Student total out of bounds! Check your entry and try again.")
                 student_total = 0
         except:
@@ -52,18 +52,19 @@ def tutorEntry():
     print("Candidate total successfully entered.")
 
     candidate_name = ""
-    candidate_dict = {"total":0}
+    candidate_dictionary = {"total":0}
     for i in range(candidates_total):
-        if len(candidate_dict) >= 5:
+        if len(candidate_dictionary) >= 5:
             print("Maximum number of candidates reached!")
             break
         candidate_name = input(f"Enter candidate {i+1}'s name.\n")
-        candidate_dict.update({candidate_name:0})
+        candidate_dictionary.update({candidate_name:0})
     print("Candidate entry completed. Current candidates: ")
-    candidatesPrint(candidate_dict)
+    candidatesPrint(candidate_dictionary)
+    votingProcess(candidate_dictionary)
 
 
-def votingProcess():
+def votingProcess(candidate_dict):
     voterID_list = []
     for i in range(student_total):
         voterId = input("\nPlease enter your voter ID.\n")
@@ -92,20 +93,39 @@ def votingProcess():
                 print("\nYour vote has been successfully registered!\n")
                 candidate_dict.update({vote_entry:candidate_dict[vote_entry]+1})
                 candidate_dict.update({"total":candidate_dict["total"]+1})
-                print(candidate_dict)
     print("\n**************** \nVoting Concluded \n****************\n")
-    statistics()
+    statistics(candidate_dict)
 
-def statistics():
+def statistics(candidate_dict):
     # Sorts the dictionary
     sorted_candidates_dict = dict(sorted(candidate_dict.items(), key = lambda item: item[1], reverse = True))
     sorted_candidates_list = [i for i in sorted_candidates_dict if i != "total"]
-    print(sorted_candidates_list)
     print("Here are how the votes stack up:\n")
     for i in sorted_candidates_dict:
         if i != "total":
-            print(f"#{sorted_candidates_list.index(i) + 1} - {i} - {sorted_candidates_dict[i]} Votes")
-    print(sorted_candidates_dict)
+            percent = (sorted_candidates_dict[i] / sorted_candidates_dict["total"]) * 100
+            percent = round(percent,1)
+            print(f"#{sorted_candidates_list.index(i) + 1} - {i} - {sorted_candidates_dict[i]} Votes - {percent}% of the vote.")
+
+    sorted_candidates_dict.pop("total")
+
+    count = 0
+    tiedList = [sorted_candidates_list[0]]
+    for i in sorted_candidates_list:
+        try:
+            count += 1
+            if sorted_candidates_dict[i] == sorted_candidates_dict[sorted_candidates_list[count]]:
+                tiedList.append(sorted_candidates_list[count])
+            else:
+                break
+        except:
+            pass
+
+    if len(tiedList) > 1:
+        print("\n************************\nIt's a tie!\nThe voting will begin again.\n************************\n")
+        candidate_dictionary = {"total":0}
+        for i in tiedList:
+            candidate_dictionary.update({i:0})
+        votingProcess(candidate_dictionary)
 
 tutorEntry()
-votingProcess()
