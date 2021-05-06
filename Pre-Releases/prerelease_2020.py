@@ -54,4 +54,4 @@ for i in studentList:
 
 parking_cost = paid_count * 30
 rec_ticket_cost = (coach_cost + parking_cost) / paid_count
-print(f"In total, {paid_count} students paid, and {non_paid_count} students did not pay. \nThe cost of the trip is {coach_cost + parking cost}")
+print(f"In total, {paid_count} students paid, and {non_paid_count} students did not pay. \nThe cost of the trip is {coach_cost + parking_cost}€.")
