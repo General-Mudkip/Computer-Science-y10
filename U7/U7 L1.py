@@ -157,7 +157,7 @@ def areaSelect():
     while True:
         aMode = 0
         # Repeats while the user's input is not in the 'modes' list
-        while not aMode in modes: 
+        while aMode not in modes: 
             aMode = input(f"Choose a mode {modes}: ")
         print(f"Selected {aMode} mode.")
         if aMode == "exit":

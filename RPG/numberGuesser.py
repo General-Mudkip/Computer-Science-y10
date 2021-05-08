@@ -25,9 +25,8 @@ def guessingGame():
                 if playerAttempts < 10:
                     cf.gGame_returnVal = 1
                     return 1
-                else:
-                    cf.gGame_returnVal = 0
-                    return 0
+                cf.gGame_returnVal = 0
+                return 0
                 ngWindow.destroy()
         except:
             answerLabel.config(text = "Error Encountered! Guess again.")

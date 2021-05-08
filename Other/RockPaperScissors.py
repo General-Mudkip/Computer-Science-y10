@@ -37,15 +37,15 @@ while True:
     playing = str(input("Start Mod? BOT/DUEL: \n"))
     
     while playing != 0 and playing in game_modes:
-        while not p1_input in valid_moves:
+        while p1_input not in valid_moves:
             p1_input = input("Player 1's Move (rock, paper, scissors): ")
-            if not p1_input in valid_moves:
+            if p1_input not in valid_moves:
                 print("Invalid move!")
         if playing == "DUEL":
             system('cls')
-            while not p2_input in valid_moves:
+            while p2_input not in valid_moves:
                 p2_input = input("Player 2's Move (rock, paper, scissors): ")
-                if not p2_input in valid_moves:
+                if p2_input not in valid_moves:
                     print("Invalid move!")
         elif playing == "BOT":
             p2_input = random.choice(list(valid_moves))
