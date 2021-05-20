@@ -39,6 +39,49 @@ bus_names = ["Bus A", "Bus B", "Bus C", "Bus D", "Bus E", "Bus F"]
 
 menu = True
 
+def dataEntry():
+    print("\nWhich day's data would you like to modify?\n")
+    dayName = input("")
+    if dayName not in array_of_array_names:
+        print(f"Invalid day! Select from: {array_of_array_names}")
+    else:
+        data = input("Input your data for each of the bus routes.\nThe data should be seperated with commas, for example '1,0,0,2,3'.\n")
+        try:
+            # Splits string into a list
+            data = data.split(",")
+            # Checks if the user has entered all 5 bus routes
+            if len(data) != 5:
+                print("Incorrect amount of data.")
+            else:
+                array = array_of_arrays[array_of_array_names.index(dayName)]
+                for i in range(5):
+                    # Changes each value in the array to the float of each data in the data array
+                    array[i] = float(data[i])
+
+                print("\nData entry complete! \n")
+        except BaseException:
+            print("Invalid entry! Please enter the correct values.")
+
+def statistics():
+    daysLateArray = [0,0,0,0,0,0]
+    for busRoute in bus_names:
+        p = input(f"\nOutputting {busRoute}. Press enter to continue.")
+        bIndex = bus_names.index(busRoute)
+        totalMin = 0
+        daysLate = 0
+        for i in range(len(array_of_arrays)):
+            minutes = array_of_arrays[i][bIndex]
+            print(f"{array_of_array_names[i]} - {minutes} Minutes")
+            if minutes < 0:
+                daysLate += 1
+                totalMin += minutes
+
+        daysLateArray[bus_names.index(busRoute)] = daysLate
+        avTime = totalMin/20
+        print(f"When it was late, {busRoute} arrived, on average, {abs(avTime)} minutes late.")
+
+    print(f"\n{bus_names[daysLateArray.index(max(daysLateArray))]} was the bus route with the most late days; {max(daysLateArray)} days late in total.\n")
+
 while menu:
     menuPrint()
     choice = input("What option would you like to choose?\n")
@@ -46,7 +89,7 @@ while menu:
         print("\n INVALID CHOICE! \n")
     else:
         if choice == "1":
-           pass 
+           dataEntry() 
 
         if choice == "2":
             dayName = input("Please input a day:\n")
@@ -54,11 +97,24 @@ while menu:
                 print("Invalid day! Select from: ", array_of_array_names)
             else:
                 lateCount = 0
+                minutesLate = 0
                 busIndexes = []
                 count = 0
+                print("\n")
                 for i in array_of_arrays[array_of_array_names.index(dayName)]:
                     if not abs(i) == i:
                         lateCount += 1
+                        minutesLate += array_of_arrays[array_of_array_names.index(dayName)][count]
                         busIndexes.append(bus_names[count])
+                        print(f"- {bus_names[count]}: {abs(array_of_arrays[array_of_array_names.index(dayName)][count])} Minutes Late")
                     count += 1
-                print(f"On {dayName}, {lateCount} busses were late. This includes: {busIndexes}")
+                print(f"\nOn {dayName}, {lateCount} busses were late. This includes: {busIndexes}")
+                try:
+                    print(f"The busses were, on average, {round(abs(minutesLate/lateCount),2)} minutes late.")
+                except ZeroDivisionError:
+                    print("No busses were late.")
+        
+        if choice == "3":
+            statistics()
+
+        wait = input("Continue?\n")
